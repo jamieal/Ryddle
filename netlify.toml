@@ -1,3 +1,3 @@
 [build]
-  functions = "netlify/functions"   # folder containing your .js function files
+  functions = "netlify"   # folder containing your .js function files
   publish = "public"               # or wherever your index.html is
