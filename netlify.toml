@@ -1,3 +1,6 @@
 [build]
-  functions = "netlify"
+  functions = "netlify/functions"
   publish = "public"
+
+[functions."riddle"]
+  included_files = ["netlify/functions/riddle/riddles.json"]
