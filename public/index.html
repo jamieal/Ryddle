@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <title>Rydle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link 
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
+    rel="stylesheet" 
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
+    crossorigin="anonymous">
+  <style>
+    /* Prevent scrolling by fixing height and hiding overflow */
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+    /* Increase overall scale by 20% using zoom */
+    body {
+      font-size: 1.2rem;
+      zoom: 1.2;
+    }
+    /* Light mode background: slightly darker */
+    html[data-bs-theme="light"] body {
+      background-color: #e0e0e0;
+    }
+    /* Theme toggle button */
+    #theme-toggle {
+      z-index: 9999;
+    }
+    /* Fixed header for the title */
+    #header-container {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      text-align: center;
+      padding: 20px 0;
+      background: inherit;
+      z-index: 1000;
+    }
+    /* Reserve space for the header */
+    #main-content {
+      margin-top: 120px;
+      height: calc(100% - 120px);
+    }
+    /* Content wrapper centers interactive elements without shifting content */
+    #content-wrapper {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    /* Make the Play button larger */
+    #play-button {
+      font-size: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      transition: opacity 1s ease-out;
+    }
+    .fade-out {
+      opacity: 0;
+      transition: opacity 1s ease-out;
+    }
+    /* Reserve space so that error messages don't shift content */
+    #error-counter, #incorrect-guesses {
+      min-height: 30px;
+    }
+    /* Allocate a fixed space for result messages below the guess box */
+    #result-message {
+      min-height: 50px;
+      margin-top: 1rem;
+    }
+    /* Shake animation with dynamic shake amount (default 5px) */
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(calc(-1 * var(--shake-amt, 5px))); }
+      50% { transform: translateX(var(--shake-amt, 5px)); }
+      75% { transform: translateX(calc(-1 * var(--shake-amt, 5px))); }
+      100% { transform: translateX(0); }
+    }
+    .shake {
+      animation: shake 0.5s;
+    }
+    /* Pop animation for feedback on the Guess button */
+    @keyframes pop {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .check-animation {
+      animation: pop 0.5s ease-out;
+    }
+    /* Error mark styling: red X with heavier border and bolder text; closer spacing */
+    .error-mark {
+      font-weight: bolder;
+      color: red;
+      border: 2px solid red;
+      background-color: inherit;
+      padding: 2px 4px;
+      margin-right: 0.2rem;
+      display: inline-block;
+    }
+    /* Incorrect guess text with a softer pink color */
+    .incorrect-guess {
+      color: #ffb3b3;
+    }
+    /* Position About button in the top left */
+    #about-nav {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1100;
+    }
+    /* Celebration styling: green background for correct answer message */
+    .celebrate {
+      background-color: #28a745;
+      color: white;
+      padding: 1rem;
+      border-radius: 5px;
+      transition: background-color 0.5s ease;
+    }
+    /* Failure styling: red background for failure message */
+    .fail {
+      background-color: #dc3545;
+      color: white;
+      padding: 1rem;
+      border-radius: 5px;
+      transition: background-color 0.5s ease;
+    }
+    /* Duplicate/Invalid word message styling with semi-transparent background */
+    .duplicate {
+      background: rgba(255, 193, 7, 0.8);
+      color: black;
+      padding: 0.5rem;
+      border-radius: 5px;
+      transition: opacity 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+  <!-- About Button in the Top Left -->
+  <button id="about-nav" class="btn btn-dark btn-outline-light" data-bs-toggle="modal" data-bs-target="#aboutModal">
+    About
+  </button>
+  <!-- Theme Toggle Button in the Top Right -->
+  <button id="theme-toggle" class="btn btn-secondary position-absolute top-0 end-0 m-3"></button>
+
+  <!-- About Modal -->
+  <div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="aboutModalLabel">About Rydle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Rydle is a quizical inspired game that challenges you to guess the answer to a riddle within the following criteria:</p>
+          <ul class="list-group">
+            <li class="list-group-item">You have 5 guesses</li>
+            <li class="list-group-item">The answer may contain words like "a", "an". you won't be penalised if you don't use it.</li>
+            <li class="list-group-item">If you guess incorrectly, the riddle will be shown to you.</li>
+            <li class="list-group-item">Only one Rydle a day!</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <p class="fw-light" >Version 0.2</p>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fixed Header: Title -->
+  <div id="header-container">
+    <h1 id="title" class="display-1">Rydle</h1>
+  
+  </div>
+
+  <!-- Main Content Container -->
+  <div id="main-content">
+    <div id="content-wrapper">
+      <!-- Game Board Section: Initially show the Play button -->
+      <div id="game-board" class="mb-4">
+        <button id="play-button" type="button" class="btn btn-dark btn-outline-light">Play!</button>
+        
+      </div>
+      <!-- Riddle Section (hidden initially) -->
+      <div id="riddle-section" class="d-none">
+        <!-- The daily riddle text will be filled in here by our fetch call -->
+        <p id="riddle-text" class="fs-3"></p>
+
+        <!-- 
+          Single parent container for the input group, 
+          result message, error marks, and incorrect guesses. 
+          Ensures everything is aligned under the same column.
+        -->
+        <div class="w-50 mx-auto text-center">
+          <!-- Input group for answer and Guess button -->
+          <div class="input-group">
+            <input type="text" id="riddleAnswer" class="form-control text-center w-50 mx-auto text-center" placeholder="Enter your answer">
+            <button id="submit-riddle" type="button" class="btn btn-dark btn-outline-light">Guess</button>
+          </div>
+
+          <!-- Container for displaying warning/error messages below the input -->
+          <div id="result-message" class="mt-2"></div>
+
+          <!-- Error counter container for red X's -->
+          <div id="error-counter" class="mt-2"></div>
+
+          <!-- Container for displaying each incorrect guess below the error marks -->
+          <div id="incorrect-guesses" class="mt-2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script 
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+    crossorigin="anonymous"></script>
+  <script>
+    // Fetch the daily riddle and store the answer dynamically.
+    document.addEventListener('DOMContentLoaded', function(){
+  fetch('/.netlify/functions/riddle')  // Replaced localhost with Netlify Function path
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('riddle-text').textContent = data.riddle;
+      // Store the correct answer for reference (converted to lowercase)
+      window.correctAnswer = data.answer.toLowerCase();
+    })
+    .catch(error => console.error('Error fetching riddle:', error));
+});
+
+
+    const themeToggleButton = document.getElementById('theme-toggle');
+    const playButton = document.getElementById('play-button');
+    const riddleSection = document.getElementById('riddle-section');
+    const submitRiddleButton = document.getElementById('submit-riddle');
+    const errorCounter = document.getElementById('error-counter');
+    const incorrectGuesses = document.getElementById('incorrect-guesses');
+    const answerInput = document.getElementById('riddleAnswer');
+    const resultMessage = document.getElementById('result-message');
+    let incorrectCount = 0;
+    let previousAttempts = [];
+
+    // Update the theme toggle button text.
+    function updateThemeButtonText() {
+      const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+      themeToggleButton.textContent = currentTheme === 'dark' ? "Light Mode" : "Dark Mode";
+    }
+    updateThemeButtonText();
+    themeToggleButton.addEventListener('click', function() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-bs-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-bs-theme', newTheme);
+      updateThemeButtonText();
+    });
+
+    // When Play! is clicked, reveal the riddle section and fade out the Play button.
+    playButton.addEventListener('click', function() {
+      playButton.classList.add('fade-out');
+      setTimeout(() => {
+        playButton.style.display = "none";
+        riddleSection.classList.remove('d-none');
+      }, 1200);
+    });
+
+    // Allow submission via the Enter key.
+    answerInput.addEventListener('keydown', function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        submitRiddleButton.click();
+      }
+    });
+
+    // Function to show a duplicate or invalid word message below the input.
+    function showMessage(message) {
+      resultMessage.innerHTML = `<div class='duplicate'>${message}</div>`;
+      setTimeout(() => {
+        resultMessage.innerHTML = "";
+      }, 2000);
+    }
+
+    // Handle riddle answer submission.
+    submitRiddleButton.addEventListener('click', function() {
+      const answer = answerInput.value.trim().toLowerCase();
+
+      // If input is empty, shake the input box.
+      if (answer === "") {
+        answerInput.classList.add('shake');
+        setTimeout(() => {
+          answerInput.classList.remove('shake');
+        }, 1000);
+        return;
+      }
+      
+      // Check if the input consists solely of letters.
+      if (!/^[a-z]+$/.test(answer)) {
+        showMessage("Please enter a valid word.");
+        answerInput.classList.add('shake');
+        setTimeout(() => {
+          answerInput.classList.remove('shake');
+        }, 2000);
+        return;
+      }
+      
+      // Check the word against an online dictionary.
+      fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${answer}`)
+        .then(response => {
+          if (!response.ok) {
+            showMessage("Please enter a valid word.");
+            answerInput.classList.add('shake');
+            setTimeout(() => {
+              answerInput.classList.remove('shake');
+            }, 2000);
+            throw new Error("Invalid word");
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Check if this answer was already submitted.
+          if (previousAttempts.includes(answer)) {
+            riddleSection.classList.add('shake');
+            showMessage("Answer already given");
+            setTimeout(() => {
+              riddleSection.classList.remove('shake');
+            }, 1000);
+            return;
+          }
+          
+          // Add this answer to the array of previous attempts.
+          previousAttempts.push(answer);
+          
+          // Check if the submitted answer matches the dynamically fetched correct answer.
+          if (answer === window.correctAnswer) {
+            answerInput.disabled = true;
+            submitRiddleButton.disabled = true;  // Disable the guess button.
+            answerInput.style.fontWeight = "bold";
+            submitRiddleButton.innerHTML = "&#10003;";
+            submitRiddleButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-danger');
+            submitRiddleButton.classList.add('btn-success', 'check-animation');
+            if (incorrectCount < 5) {
+              setTimeout(() => {
+                resultMessage.innerHTML = "<h2>Congratulations! You got it right!</h2>";
+                resultMessage.classList.add("celebrate");
+              }, 500);
+            }
+          } else {
+            // Handle incorrect answer.
+            incorrectCount++;
+            let shakeAmount = (incorrectCount * 5) + "px";
+            answerInput.style.setProperty("--shake-amt", shakeAmount);
+            // Append a red X (error mark) to the error counter.
+            const errorMark = document.createElement('span');
+            errorMark.innerHTML = "&#10007;";
+            errorMark.className = "error-mark";
+            errorCounter.appendChild(errorMark);
+            // Append the incorrect guess below.
+            const wrongWord = document.createElement('div');
+            wrongWord.className = "incorrect-guess";
+            wrongWord.textContent = answerInput.value.trim();
+            incorrectGuesses.appendChild(wrongWord);
+            // Change button to show red X and shake input.
+            submitRiddleButton.innerHTML = "&#10007;";
+            submitRiddleButton.classList.remove('btn-dark', 'btn-outline-light');
+            submitRiddleButton.classList.add('btn-danger');
+            answerInput.classList.add('shake');
+            setTimeout(() => {
+              answerInput.classList.remove('shake');
+              if (incorrectCount < 5) {
+                submitRiddleButton.innerHTML = "Guess";
+                submitRiddleButton.classList.remove('btn-danger');
+                submitRiddleButton.classList.add('btn-dark', 'btn-outline-light');
+              }
+            }, 1000);
+            // When maximum attempts reached, display the correct answer.
+            if (incorrectCount >= 5) {
+              answerInput.value = window.correctAnswer;
+              answerInput.disabled = true;
+              submitRiddleButton.disabled = true;  // Disable the guess button.
+              answerInput.style.fontWeight = "bold";
+              submitRiddleButton.innerHTML = "&#10007;";
+              submitRiddleButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-danger', 'btn-success');
+              submitRiddleButton.classList.add('btn-danger', 'check-animation');
+              setTimeout(() => {
+                resultMessage.innerHTML = `<h2>Oops, try again tomorrow! The answer was: ${window.correctAnswer}</h2>`;
+                resultMessage.classList.add("fail");
+              }, 500);
+            }
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    });
+  </script>
+</body>
+</html>
