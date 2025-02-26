@@ -7,7 +7,6 @@ function getTodayDate() {
 
 exports.handler = async (event, context) => {
   try {
-    // Read riddles.json
     const data = await fs.readFile(__dirname + '/riddles.json', 'utf8');
     const riddles = JSON.parse(data);
 
