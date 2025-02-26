@@ -161,13 +161,14 @@
           <p>Rydle is a quizical inspired game that challenges you to guess the answer to a riddle within the following criteria:</p>
           <ul class="list-group">
             <li class="list-group-item">You have 5 guesses</li>
-            <li class="list-group-item">The answer may contain words like "a", "an". But you won't be penalised if you don't use it.</li>
+            <li class="list-group-item">The answer may contain words like "a", "an". you won't be penalised if you don't use it.</li>
             <li class="list-group-item">If you guess incorrectly, the riddle will be shown to you.</li>
             <li class="list-group-item">Only one Rydle a day!</li>
           </ul>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <p class="fw-light" >Version 0.2</p>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close!</button>
         </div>
       </div>
     </div>
@@ -176,6 +177,7 @@
   <!-- Fixed Header: Title -->
   <div id="header-container">
     <h1 id="title" class="display-1">Rydle</h1>
+  
   </div>
 
   <!-- Main Content Container -->
@@ -184,6 +186,7 @@
       <!-- Game Board Section: Initially show the Play button -->
       <div id="game-board" class="mb-4">
         <button id="play-button" type="button" class="btn btn-dark btn-outline-light">Play!</button>
+        
       </div>
       <!-- Riddle Section (hidden initially) -->
       <div id="riddle-section" class="d-none">
@@ -264,7 +267,7 @@
       setTimeout(() => {
         playButton.style.display = "none";
         riddleSection.classList.remove('d-none');
-      }, 2000);
+      }, 1200);
     });
 
     // Allow submission via the Enter key.
