@@ -1,0 +1,15 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  #game-board {
+    margin: auto;
+    width: 300px;
+    border: 1px solid #ccc;
+    padding: 20px;
+  }
+  
+  .fade-out {
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}
