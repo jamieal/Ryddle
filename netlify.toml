@@ -2,5 +2,5 @@
   functions = "netlify/functions"
   publish = "public"
 
-[functions."riddle"]
-  included_files = ["netlify/functions/riddle/riddles.json"]
+[functions."ryddle"]
+  included_files = ["netlify/functions/ryddle/ryddle.json"]
