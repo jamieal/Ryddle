@@ -1,7 +1,7 @@
 {
-  "name": "rydle",
+  "name": "ryddle",
   "version": "1.0.0",
-  "description": "\"# Rydle\" \r \"# Rydle\"",
+  "description": "\"# Ryddle\" \r \"# Ryddle\"",
   "main": "script.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

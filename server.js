@@ -16,7 +16,7 @@ function getTodayDate() {
 app.get('/api/riddle', (req, res) => {
   fs.readFile('riddles.json', 'utf8', (err, data) => {
     if (err) {
-      res.status(500).json({ error: 'Error reading riddles.' });
+      res.status(500).json({ error: 'Error reading Ryddles.' });
       return;
     }
     const riddles = JSON.parse(data);
@@ -26,7 +26,7 @@ app.get('/api/riddle', (req, res) => {
     if (riddleOfTheDay) {
       res.json(riddleOfTheDay);
     } else {
-      res.status(404).json({ error: 'No riddle for today.' });
+      res.status(404).json({ error: 'No Rydle for today.' });
     }
   });
 });

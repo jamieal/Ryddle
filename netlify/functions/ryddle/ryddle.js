@@ -7,28 +7,28 @@ function getTodayDate() {
 
 exports.handler = async (event, context) => {
   try {
-    const data = await fs.readFile(__dirname + '/riddles.json', 'utf8');
+    const data = await fs.readFile(__dirname + '/ryddles.json', 'utf8');
     const riddles = JSON.parse(data);
 
     const today = getTodayDate();
-    const riddleOfTheDay = riddles.find(r => r.date === today);
+    const ryddleOfTheDay = riddles.find(r => r.date === today);
 
-    if (riddleOfTheDay) {
+    if (ryddleOfTheDay) {
       return {
         statusCode: 200,
-        body: JSON.stringify(riddleOfTheDay),
+        body: JSON.stringify(ryddleOfTheDay),
       };
     } else {
       return {
         statusCode: 404,
-        body: JSON.stringify({ error: 'No riddle for today.' }),
+        body: JSON.stringify({ error: 'No ryddle for today.' }),
       };
     }
   } catch (err) {
     console.error(err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Error reading riddles.' }),
+      body: JSON.stringify({ error: 'Error reading ryddles.' }),
     };
   }
 };
