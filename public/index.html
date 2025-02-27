@@ -158,16 +158,16 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>Ryddle is a quizical inspired game that challenges you to guess the answer to a Ryddle within the following criteria:</p>
+          <p>Ryddle is a quizical inspired game that challenges you to guess the answer to a riddle within the following criteria:</p>
           <ul class="list-group">
             <li class="list-group-item">You have 5 guesses</li>
             <li class="list-group-item">The answer may contain words like "a" or "an". You won't be penalised if you don't use it.</li>
-            <li class="list-group-item">If you guess 5 times incorrectly, the Ryddle will be shown to you.</li>
+            <li class="list-group-item">If you guess 5 times incorrectly, the riddle will be shown to you.</li>
             <li class="list-group-item">Only one Ryddle a day!</li>
           </ul>
         </div>
         <div class="modal-footer">
-          <p class="fw-light" >Version 0.3</p>
+          <p class="fw-light" >Version 0.2</p>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close!</button>
         </div>
       </div>
@@ -177,6 +177,7 @@
   <!-- Fixed Header: Title -->
   <div id="header-container">
     <h1 id="title" class="display-1">Ryddle</h1>
+  
   </div>
 
   <!-- Main Content Container -->
@@ -185,11 +186,12 @@
       <!-- Game Board Section: Initially show the Play button -->
       <div id="game-board" class="mb-4">
         <button id="play-button" type="button" class="btn btn-dark btn-outline-light">Play!</button>
+        
       </div>
-      <!-- Ryddle Section (hidden initially) -->
-      <div id="ryddle-section" class="d-none">
-        <!-- The daily Ryddle text will be filled in here by our fetch call -->
-        <p id="ryddle-text" class="fs-3"></p>
+      <!-- Riddle Section (hidden initially) -->
+      <div id="riddle-section" class="d-none">
+        <!-- The daily riddle text will be filled in here by our fetch call -->
+        <p id="riddle-text" class="fs-3"></p>
 
         <!-- 
           Single parent container for the input group, 
@@ -199,8 +201,8 @@
         <div class="w-50 mx-auto text-center">
           <!-- Input group for answer and Guess button -->
           <div class="input-group">
-            <input type="text" id="ryddleAnswer" class="form-control text-center w-50 mx-auto" placeholder="Enter your answer">
-            <button id="submit-ryddle" type="button" class="btn btn-dark btn-outline-light">Guess</button>
+            <input type="text" id="riddleAnswer" class="form-control text-center w-50 mx-auto text-center" placeholder="Enter your answer">
+            <button id="submit-riddle" type="button" class="btn btn-dark btn-outline-light">Guess</button>
           </div>
 
           <!-- Container for displaying warning/error messages below the input -->
@@ -222,15 +224,29 @@
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
     crossorigin="anonymous"></script>
   <script>
+<<<<<<< HEAD
+=======
+    // Fetch the daily riddle and store the answer dynamically.
+    document.addEventListener('DOMContentLoaded', function(){
+  fetch('/.netlify/functions/riddle')  // Replaced localhost with Netlify Function path
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('riddle-text').textContent = data.riddle;
+      // Store the correct answer for reference (converted to lowercase)
+      window.correctAnswer = data.answer.toLowerCase();
+    })
+    .catch(error => console.error('Error fetching riddle:', error));
+});
+>>>>>>> parent of e3f1093 (Merge pull request #9 from jamieal/rename)
 
 
     const themeToggleButton = document.getElementById('theme-toggle');
     const playButton = document.getElementById('play-button');
-    const ryddleSection = document.getElementById('ryddle-section');
-    const submitRyddleButton = document.getElementById('submit-ryddle');
+    const riddleSection = document.getElementById('riddle-section');
+    const submitRiddleButton = document.getElementById('submit-riddle');
     const errorCounter = document.getElementById('error-counter');
     const incorrectGuesses = document.getElementById('incorrect-guesses');
-    const answerInput = document.getElementById('ryddleAnswer');
+    const answerInput = document.getElementById('riddleAnswer');
     const resultMessage = document.getElementById('result-message');
     let incorrectCount = 0;
     let previousAttempts = [];
@@ -249,12 +265,12 @@
       updateThemeButtonText();
     });
 
-    // When Play! is clicked, reveal the Ryddle section and fade out the Play button.
+    // When Play! is clicked, reveal the riddle section and fade out the Play button.
     playButton.addEventListener('click', function() {
       playButton.classList.add('fade-out');
       setTimeout(() => {
         playButton.style.display = "none";
-        ryddleSection.classList.remove('d-none');
+        riddleSection.classList.remove('d-none');
       }, 1200);
     });
 
@@ -262,7 +278,7 @@
     answerInput.addEventListener('keydown', function(event) {
       if (event.key === "Enter") {
         event.preventDefault();
-        submitRyddleButton.click();
+        submitRiddleButton.click();
       }
     });
 
@@ -274,8 +290,8 @@
       }, 2000);
     }
 
-    // Handle Ryddle answer submission.
-    submitRyddleButton.addEventListener('click', function() {
+    // Handle riddle answer submission.
+    submitRiddleButton.addEventListener('click', function() {
       const answer = answerInput.value.trim().toLowerCase();
 
       // If input is empty, shake the input box.
@@ -313,10 +329,10 @@
         .then(data => {
           // Check if this answer was already submitted.
           if (previousAttempts.includes(answer)) {
-            ryddleSection.classList.add('shake');
+            riddleSection.classList.add('shake');
             showMessage("Answer already given");
             setTimeout(() => {
-              ryddleSection.classList.remove('shake');
+              riddleSection.classList.remove('shake');
             }, 1000);
             return;
           }
@@ -327,11 +343,11 @@
           // Check if the submitted answer matches the dynamically fetched correct answer.
           if (answer === window.correctAnswer) {
             answerInput.disabled = true;
-            submitRyddleButton.disabled = true;  // Disable the guess button.
+            submitRiddleButton.disabled = true;  // Disable the guess button.
             answerInput.style.fontWeight = "bold";
-            submitRyddleButton.innerHTML = "&#10003;";
-            submitRyddleButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-danger');
-            submitRyddleButton.classList.add('btn-success', 'check-animation');
+            submitRiddleButton.innerHTML = "&#10003;";
+            submitRiddleButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-danger');
+            submitRiddleButton.classList.add('btn-success', 'check-animation');
             if (incorrectCount < 5) {
               setTimeout(() => {
                 resultMessage.innerHTML = "<h2>Congratulations! You got it right!</h2>";
@@ -354,27 +370,27 @@
             wrongWord.textContent = answerInput.value.trim();
             incorrectGuesses.appendChild(wrongWord);
             // Change button to show red X and shake input.
-            submitRyddleButton.innerHTML = "&#10007;";
-            submitRyddleButton.classList.remove('btn-dark', 'btn-outline-light');
-            submitRyddleButton.classList.add('btn-danger');
+            submitRiddleButton.innerHTML = "&#10007;";
+            submitRiddleButton.classList.remove('btn-dark', 'btn-outline-light');
+            submitRiddleButton.classList.add('btn-danger');
             answerInput.classList.add('shake');
             setTimeout(() => {
               answerInput.classList.remove('shake');
               if (incorrectCount < 5) {
-                submitRyddleButton.innerHTML = "Guess";
-                submitRyddleButton.classList.remove('btn-danger');
-                submitRyddleButton.classList.add('btn-dark', 'btn-outline-light');
+                submitRiddleButton.innerHTML = "Guess";
+                submitRiddleButton.classList.remove('btn-danger');
+                submitRiddleButton.classList.add('btn-dark', 'btn-outline-light');
               }
             }, 1000);
             // When maximum attempts reached, display the correct answer.
             if (incorrectCount >= 5) {
               answerInput.value = window.correctAnswer;
               answerInput.disabled = true;
-              submitRyddleButton.disabled = true;  // Disable the guess button.
+              submitRiddleButton.disabled = true;  // Disable the guess button.
               answerInput.style.fontWeight = "bold";
-              submitRyddleButton.innerHTML = "&#10007;";
-              submitRyddleButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-danger', 'btn-success');
-              submitRyddleButton.classList.add('btn-danger', 'check-animation');
+              submitRiddleButton.innerHTML = "&#10007;";
+              submitRiddleButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-danger', 'btn-success');
+              submitRiddleButton.classList.add('btn-danger', 'check-animation');
               setTimeout(() => {
                 resultMessage.innerHTML = `<h2>Oops, try again tomorrow! The answer was: ${window.correctAnswer}</h2>`;
                 resultMessage.classList.add("fail");
