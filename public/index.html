@@ -410,11 +410,37 @@
 
       // 4) Play button logic
       playButton.addEventListener('click', function() {
-        playButton.classList.add('fade-out');
-        setTimeout(() => {
-          playButton.style.display = "none";
-          ryddleSection.classList.remove('d-none');
-        }, 1200);
+  const hasSeenTutorial = localStorage.getItem('hasSeenHowToPlay');
+
+  if (!hasSeenTutorial) {
+    // 1) Show the "How to play" modal
+    const aboutModalEl = document.getElementById('aboutModal');
+    const aboutModal = new bootstrap.Modal(aboutModalEl, {});
+
+    // Mark that they've now seen the tutorial
+    localStorage.setItem('hasSeenHowToPlay', 'true');
+
+    // Show the modal
+    aboutModal.show();
+
+    // 2) After the modal is closed, fade out "Play" & show the Riddle
+    aboutModalEl.addEventListener('hidden.bs.modal', function() {
+      // Only run once
+      playButton.classList.add('fade-out');
+      setTimeout(() => {
+        playButton.style.display = "none";
+        ryddleSection.classList.remove('d-none');
+      }, 1200);
+    }, { once: true });
+
+  } else {
+    // If they've already seen how to play, skip the modal
+    playButton.classList.add('fade-out');
+    setTimeout(() => {
+      playButton.style.display = "none";
+      ryddleSection.classList.remove('d-none');
+    }, 1200);
+  }
       });
 
       // 5) Submit guess logic
