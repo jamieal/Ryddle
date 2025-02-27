@@ -224,17 +224,30 @@
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
     crossorigin="anonymous"></script>
   <script>
-    // Fetch the daily riddle and store the answer dynamically.
-    document.addEventListener('DOMContentLoaded', function(){
-  fetch('/.netlify/functions/riddle')  // Replaced localhost with Netlify Function path
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById('riddle-text').textContent = data.riddle;
-      // Store the correct answer for reference (converted to lowercase)
-      window.correctAnswer = data.answer.toLowerCase();
-    })
-    .catch(error => console.error('Error fetching riddle:', error));
-});
+ document.addEventListener('DOMContentLoaded', function() {
+    // 1) Compute the user's local date
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const localDate = `${year}-${month}-${day}`;
+
+    // 2) Fetch from your Netlify function, passing ?date=YYYY-MM-DD
+    fetch(`/.netlify/functions/ryddle?date=${localDate}`)
+      .then(response => response.json())
+      .then(data => {
+        // If the function returns an error (e.g., "No ryddle for date..."), handle that
+        if (data.error) {
+          document.getElementById('ryddle-text').textContent = data.error;
+        } else {
+          // Show the riddle
+          document.getElementById('ryddle-text').textContent = data.riddle;
+          // Store the correct answer for reference
+          window.correctAnswer = data.answer.toLowerCase();
+        }
+      })
+      .catch(error => console.error('Error fetching Ryddle:', error));
+  });
 
 
     const themeToggleButton = document.getElementById('theme-toggle');

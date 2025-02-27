@@ -1,17 +1,23 @@
 const fs = require('fs/promises');
 
-function getTodayDate() {
-  const today = new Date();
-  return today.toISOString().split('T')[0];
-}
-
 exports.handler = async (event, context) => {
   try {
-    const data = await fs.readFile(__dirname + '/ryddles.json', 'utf8');
-    const riddles = JSON.parse(data);
+    // Read the date from the query string: ?date=2025-02-25
+    const dateParam = event.queryStringParameters?.date;
 
-    const today = getTodayDate();
-    const ryddleOfTheDay = riddles.find(r => r.date === today);
+    if (!dateParam) {
+      // If no date provided, return an error or handle as you wish
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'No date provided.' })
+      };
+    }
+
+    const data = await fs.readFile(__dirname + '/ryddles.json', 'utf8');
+    const ryddles = JSON.parse(data);
+
+    // Find the matching date
+    const ryddleOfTheDay = ryddles.find(r => r.date === dateParam);
 
     if (ryddleOfTheDay) {
       return {
@@ -21,7 +27,7 @@ exports.handler = async (event, context) => {
     } else {
       return {
         statusCode: 404,
-        body: JSON.stringify({ error: 'No ryddle for today.' }),
+        body: JSON.stringify({ error: `No ryddle for date ${dateParam}.` }),
       };
     }
   } catch (err) {
