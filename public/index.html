@@ -11,6 +11,14 @@
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
     crossorigin="anonymous">
   <style>
+    @media (max-width: 576px) {
+      #riddleAnswer {
+        font-size: 1rem;
+      }
+      body {
+        zoom: 1; 
+      }
+    }
     /* Prevent scrolling by fixing height and hiding overflow */
     html, body {
       height: 100%;
@@ -139,6 +147,25 @@
       border-radius: 5px;
       transition: opacity 0.5s ease;
     }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    .hint-box {
+      background-color: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      max-width: 300px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -191,10 +218,23 @@
         <!-- The daily Ryddle text will be filled in here by our fetch call -->
         <p id="ryddle-text" class="fs-3"></p>
 
+        <!-- Transparent overlay for the hint popup -->
+        <div id="hint-overlay" class="d-none overlay">
+          <div class="hint-box">
+            <p>Would you like a hint?</p>
+            <button id="yes-hint" class="btn btn-primary m-2">Yes</button>
+            <button id="no-hint" class="btn btn-secondary m-2">No</button>
+          </div>
+        </div>
+
+        <!-- Container to display the hint once accepted -->
+        <div id="hint-container" class="mt-2 d-none">
+          <p id="hint-text" class="text-warning fw-bold"></p>
+        </div>
+
         <!-- 
           Single parent container for the input group, 
-          result message, error marks, and incorrect guesses. 
-          Ensures everything is aligned under the same column.
+          result message, error marks, and incorrect guesses.
         -->
         <div class="w-50 mx-auto text-center">
           <!-- Input group for answer and Guess button -->
@@ -221,180 +261,204 @@
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
     crossorigin="anonymous"></script>
+
   <script>
-    // Fetch the daily Ryddle and store the answer dynamically.
     document.addEventListener('DOMContentLoaded', function(){
-      fetch('/.netlify/functions/ryddle')  // If your function is named "ryddle.js"
+      // 1) Fetch the daily Ryddle and store the answer/hint
+      fetch('/.netlify/functions/ryddle')
         .then(response => response.json())
         .then(data => {
           document.getElementById('ryddle-text').textContent = data.riddle;
-          // Store the correct answer for reference (converted to lowercase)
           window.correctAnswer = data.answer.toLowerCase();
+          window.currentHint = data.hint;
         })
         .catch(error => console.error('Error fetching Ryddle:', error));
-    });
 
-    const themeToggleButton = document.getElementById('theme-toggle');
-    const playButton = document.getElementById('play-button');
-    const ryddleSection = document.getElementById('ryddle-section');
-    const submitRyddleButton = document.getElementById('submit-ryddle');
-    const errorCounter = document.getElementById('error-counter');
-    const incorrectGuesses = document.getElementById('incorrect-guesses');
-    const answerInput = document.getElementById('ryddleAnswer');
-    const resultMessage = document.getElementById('result-message');
-    let incorrectCount = 0;
-    let previousAttempts = [];
+      // 2) Setup references and variables
+      const themeToggleButton = document.getElementById('theme-toggle');
+      const playButton = document.getElementById('play-button');
+      const ryddleSection = document.getElementById('ryddle-section');
+      const submitRyddleButton = document.getElementById('submit-ryddle');
+      const errorCounter = document.getElementById('error-counter');
+      const incorrectGuesses = document.getElementById('incorrect-guesses');
+      const answerInput = document.getElementById('ryddleAnswer');
+      const resultMessage = document.getElementById('result-message');
+      let incorrectCount = 0;
+      let previousAttempts = [];
 
-    // Update the theme toggle button text.
-    function updateThemeButtonText() {
-      const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-      themeToggleButton.textContent = currentTheme === 'dark' ? "Light Mode" : "Dark Mode";
-    }
-    updateThemeButtonText();
-    themeToggleButton.addEventListener('click', function() {
-      const html = document.documentElement;
-      const currentTheme = html.getAttribute('data-bs-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      html.setAttribute('data-bs-theme', newTheme);
+      // 3) Theme toggle logic
+      function updateThemeButtonText() {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        themeToggleButton.textContent = currentTheme === 'dark' ? "Light Mode" : "Dark Mode";
+      }
       updateThemeButtonText();
-    });
+      themeToggleButton.addEventListener('click', function() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-bs-theme', newTheme);
+        updateThemeButtonText();
+      });
 
-    // When Play! is clicked, reveal the Ryddle section and fade out the Play button.
-    playButton.addEventListener('click', function() {
-      playButton.classList.add('fade-out');
-      setTimeout(() => {
-        playButton.style.display = "none";
-        ryddleSection.classList.remove('d-none');
-      }, 1200);
-    });
-
-    // Allow submission via the Enter key.
-    answerInput.addEventListener('keydown', function(event) {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        submitRyddleButton.click();
-      }
-    });
-
-    // Function to show a duplicate or invalid word message below the input.
-    function showMessage(message) {
-      resultMessage.innerHTML = `<div class='duplicate'>${message}</div>`;
-      setTimeout(() => {
-        resultMessage.innerHTML = "";
-      }, 2000);
-    }
-
-    // Handle Ryddle answer submission.
-    submitRyddleButton.addEventListener('click', function() {
-      const answer = answerInput.value.trim().toLowerCase();
-
-      // If input is empty, shake the input box.
-      if (answer === "") {
-        answerInput.classList.add('shake');
+      // 4) Play button logic
+      playButton.addEventListener('click', function() {
+        playButton.classList.add('fade-out');
         setTimeout(() => {
-          answerInput.classList.remove('shake');
-        }, 1000);
-        return;
-      }
-      
-      // Check if the input consists solely of letters.
-      if (!/^[a-z]+$/.test(answer)) {
-        showMessage("Please enter a valid word.");
-        answerInput.classList.add('shake');
+          playButton.style.display = "none";
+          ryddleSection.classList.remove('d-none');
+        }, 1200);
+      });
+
+      // 5) Submit guess logic
+      // Allow submission via Enter key
+      answerInput.addEventListener('keydown', function(event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          submitRyddleButton.click();
+        }
+      });
+
+      function showMessage(message) {
+        resultMessage.innerHTML = `<div class='duplicate'>${message}</div>`;
         setTimeout(() => {
-          answerInput.classList.remove('shake');
+          resultMessage.innerHTML = "";
         }, 2000);
-        return;
       }
-      
-      // Check the word against an online dictionary.
-      fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${answer}`)
-        .then(response => {
-          if (!response.ok) {
-            showMessage("Please enter a valid word.");
-            answerInput.classList.add('shake');
-            setTimeout(() => {
-              answerInput.classList.remove('shake');
-            }, 2000);
-            throw new Error("Invalid word");
-          }
-          return response.json();
-        })
-        .then(data => {
-          // Check if this answer was already submitted.
-          if (previousAttempts.includes(answer)) {
-            ryddleSection.classList.add('shake');
-            showMessage("Answer already given");
-            setTimeout(() => {
-              ryddleSection.classList.remove('shake');
-            }, 1000);
-            return;
-          }
-          
-          // Add this answer to the array of previous attempts.
-          previousAttempts.push(answer);
-          
-          // Check if the submitted answer matches the dynamically fetched correct answer.
-          if (answer === window.correctAnswer) {
-            answerInput.disabled = true;
-            submitRyddleButton.disabled = true;  // Disable the guess button.
-            answerInput.style.fontWeight = "bold";
-            submitRyddleButton.innerHTML = "&#10003;";
-            submitRyddleButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-danger');
-            submitRyddleButton.classList.add('btn-success', 'check-animation');
-            if (incorrectCount < 5) {
+
+      submitRyddleButton.addEventListener('click', function() {
+        const answer = answerInput.value.trim().toLowerCase();
+
+        // Empty input check
+        if (answer === "") {
+          answerInput.classList.add('shake');
+          setTimeout(() => {
+            answerInput.classList.remove('shake');
+          }, 1000);
+          return;
+        }
+
+        // Only letters check
+        if (!/^[a-z]+$/.test(answer)) {
+          showMessage("Please enter a valid word.");
+          answerInput.classList.add('shake');
+          setTimeout(() => {
+            answerInput.classList.remove('shake');
+          }, 2000);
+          return;
+        }
+
+        // Dictionary check
+        fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${answer}`)
+          .then(response => {
+            if (!response.ok) {
+              showMessage("Please enter a valid word.");
+              answerInput.classList.add('shake');
               setTimeout(() => {
-                resultMessage.innerHTML = "<h2>Congratulations! You got it right!</h2>";
-                resultMessage.classList.add("celebrate");
-              }, 500);
+                answerInput.classList.remove('shake');
+              }, 2000);
+              throw new Error("Invalid word");
             }
-          } else {
-            // Handle incorrect answer.
-            incorrectCount++;
-            let shakeAmount = (incorrectCount * 5) + "px";
-            answerInput.style.setProperty("--shake-amt", shakeAmount);
-            // Append a red X (error mark) to the error counter.
-            const errorMark = document.createElement('span');
-            errorMark.innerHTML = "&#10007;";
-            errorMark.className = "error-mark";
-            errorCounter.appendChild(errorMark);
-            // Append the incorrect guess below.
-            const wrongWord = document.createElement('div');
-            wrongWord.className = "incorrect-guess";
-            wrongWord.textContent = answerInput.value.trim();
-            incorrectGuesses.appendChild(wrongWord);
-            // Change button to show red X and shake input.
-            submitRyddleButton.innerHTML = "&#10007;";
-            submitRyddleButton.classList.remove('btn-dark', 'btn-outline-light');
-            submitRyddleButton.classList.add('btn-danger');
-            answerInput.classList.add('shake');
-            setTimeout(() => {
-              answerInput.classList.remove('shake');
-              if (incorrectCount < 5) {
-                submitRyddleButton.innerHTML = "Guess";
-                submitRyddleButton.classList.remove('btn-danger');
-                submitRyddleButton.classList.add('btn-dark', 'btn-outline-light');
-              }
-            }, 1000);
-            // When maximum attempts reached, display the correct answer.
-            if (incorrectCount >= 5) {
-              answerInput.value = window.correctAnswer;
+            return response.json();
+          })
+          .then(data => {
+            // Duplicate guess check
+            if (previousAttempts.includes(answer)) {
+              ryddleSection.classList.add('shake');
+              showMessage("Answer already given");
+              setTimeout(() => {
+                ryddleSection.classList.remove('shake');
+              }, 1000);
+              return;
+            }
+
+            // Record attempt
+            previousAttempts.push(answer);
+
+            // Correct answer check
+            if (answer === window.correctAnswer) {
               answerInput.disabled = true;
-              submitRyddleButton.disabled = true;  // Disable the guess button.
+              submitRyddleButton.disabled = true;
               answerInput.style.fontWeight = "bold";
+              submitRyddleButton.innerHTML = "&#10003;";
+              submitRyddleButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-danger');
+              submitRyddleButton.classList.add('btn-success', 'check-animation');
+              if (incorrectCount < 5) {
+                setTimeout(() => {
+                  resultMessage.innerHTML = "<h2>Congratulations! You got it right!</h2>";
+                  resultMessage.classList.add("celebrate");
+                }, 500);
+              }
+            } else {
+              // Incorrect answer logic
+              incorrectCount++;
+
+              // On 4th wrong guess, show hint overlay
+              if (incorrectCount === 4) {
+                document.getElementById('hint-overlay').classList.remove('d-none');
+              }
+
+              let shakeAmount = (incorrectCount * 5) + "px";
+              answerInput.style.setProperty("--shake-amt", shakeAmount);
+              // Red X
+              const errorMark = document.createElement('span');
+              errorMark.innerHTML = "&#10007;";
+              errorMark.className = "error-mark";
+              errorCounter.appendChild(errorMark);
+              // Show the incorrect guess
+              const wrongWord = document.createElement('div');
+              wrongWord.className = "incorrect-guess";
+              wrongWord.textContent = answerInput.value.trim();
+              incorrectGuesses.appendChild(wrongWord);
+              // Change button to red X, shake input
               submitRyddleButton.innerHTML = "&#10007;";
-              submitRyddleButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-danger', 'btn-success');
-              submitRyddleButton.classList.add('btn-danger', 'check-animation');
+              submitRyddleButton.classList.remove('btn-dark', 'btn-outline-light');
+              submitRyddleButton.classList.add('btn-danger');
+              answerInput.classList.add('shake');
+
               setTimeout(() => {
-                resultMessage.innerHTML = `<h2>Oops, try again tomorrow! The answer was: ${window.correctAnswer}</h2>`;
-                resultMessage.classList.add("fail");
-              }, 500);
+                answerInput.classList.remove('shake');
+                if (incorrectCount < 5) {
+                  submitRyddleButton.innerHTML = "Guess";
+                  submitRyddleButton.classList.remove('btn-danger');
+                  submitRyddleButton.classList.add('btn-dark', 'btn-outline-light');
+                }
+              }, 1000);
+
+              // If 5 or more incorrect attempts, show the answer
+              if (incorrectCount >= 5) {
+                answerInput.value = window.correctAnswer;
+                answerInput.disabled = true;
+                submitRyddleButton.disabled = true;
+                answerInput.style.fontWeight = "bold";
+                submitRyddleButton.innerHTML = "&#10007;";
+                submitRyddleButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-danger', 'btn-success');
+                submitRyddleButton.classList.add('btn-danger', 'check-animation');
+                setTimeout(() => {
+                  resultMessage.innerHTML = `<h2>Oops, try again tomorrow! The answer was: ${window.correctAnswer}</h2>`;
+                  resultMessage.classList.add("fail");
+                }, 500);
+              }
             }
-          }
-        })
-        .catch(error => {
-          console.error(error);
-        });
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      });
+
+      // 6) YES/NO hint button listeners
+      document.getElementById('yes-hint').addEventListener('click', function() {
+        // Hide overlay
+        document.getElementById('hint-overlay').classList.add('d-none');
+        // Show hint container
+        document.getElementById('hint-container').classList.remove('d-none');
+        // Insert the hint text
+        document.getElementById('hint-text').textContent = window.currentHint;
+      });
+
+      document.getElementById('no-hint').addEventListener('click', function() {
+        // Hide overlay
+        document.getElementById('hint-overlay').classList.add('d-none');
+      });
     });
   </script>
 </body>
