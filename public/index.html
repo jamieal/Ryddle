@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Ryddle</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="/icons/r-square.svg" />
   <!-- Bootstrap CSS -->
   <link 
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
@@ -12,6 +13,9 @@
     crossorigin="anonymous">
 
   <style>
+   
+
+    /* On very small screens, reset body zoom */
     @media (max-width: 576px) {
       #riddleAnswer {
         font-size: 1rem;
@@ -20,24 +24,33 @@
         zoom: 1; 
       }
     }
+
     /* Prevent scrolling by fixing height and hiding overflow */
     html, body {
       height: 100%;
       overflow: hidden;
     }
-    /* Increase overall scale by 20% using zoom */
+
+    /* Base font size slightly bigger, then conditionally zoom for wider screens */
     body {
       font-size: 1.2rem;
-      zoom: 1.2;
     }
+    @media (min-width: 576px) {
+      body {
+        zoom: 1.2; /* Zoom for bigger screens if desired */
+      }
+    }
+
     /* Light mode background: slightly darker */
     html[data-bs-theme="light"] body {
       background-color: #e0e0e0;
     }
+
     /* Theme toggle button */
     #theme-toggle {
       z-index: 9999;
     }
+
     /* Fixed header for the title */
     #header-container {
       position: fixed;
@@ -50,11 +63,13 @@
       background: inherit;
       z-index: 1000;
     }
+
     /* Reserve space for the header */
     #main-content {
       margin-top: 120px;
       height: calc(100% - 120px);
     }
+
     /* Content wrapper centers interactive elements without shifting content */
     #content-wrapper {
       height: 100%;
@@ -64,6 +79,7 @@
       justify-content: center;
       text-align: center;
     }
+
     /* Make the Play button larger */
     #play-button {
       font-size: 1.5rem;
@@ -74,10 +90,12 @@
       opacity: 0;
       transition: opacity 1s ease-out;
     }
+
     /* Reserve space so that error messages don't shift content */
     #error-counter, #incorrect-guesses {
       min-height: 30px;
     }
+
     /* Allocate a fixed space for result messages below the guess box */
     #result-message {
       min-height: 50px;
@@ -95,6 +113,7 @@
     .shake {
       animation: shake 0.5s;
     }
+
     /* Pop animation for feedback on the Guess button */
     @keyframes pop {
       0% { transform: scale(0); opacity: 0; }
@@ -104,6 +123,7 @@
     .check-animation {
       animation: pop 0.5s ease-out;
     }
+
     /* Error mark styling: red X with heavier border and bolder text; closer spacing */
     .error-mark {
       font-weight: bolder;
@@ -115,12 +135,13 @@
       display: inline-block;
       font-size: 1.5rem;      /* bigger text size */
       border-radius: 0.25rem; /* slightly rounded corners */
-      
     }
+
     /* Incorrect guess text with a softer pink color */
     .incorrect-guess {
       color: #ffb3b3;
     }
+
     /* Position About button in the top left */
     #about-nav {
       position: fixed;
@@ -128,6 +149,7 @@
       left: 10px;
       z-index: 1100;
     }
+
     /* Celebration styling: green background for correct answer message */
     .celebrate {
       background-color: #28a745;
@@ -136,6 +158,7 @@
       border-radius: 5px;
       transition: background-color 0.5s ease;
     }
+
     /* Failure styling: red background for failure message */
     .fail {
       background-color: #dc3545;
@@ -144,6 +167,7 @@
       border-radius: 5px;
       transition: background-color 0.5s ease;
     }
+
     /* Duplicate/Invalid word message styling with semi-transparent background */
     .duplicate {
       background: rgba(255, 193, 7, 0.8);
@@ -162,7 +186,7 @@
       animation: fadeInOverlay 0.8s forwards;
     }
 
-    /* NEW: Fade out for overlay on yes/no */
+    /* Fade out for overlay on yes/no */
     @keyframes fadeOutOverlay {
       0% { opacity: 1; }
       100% { opacity: 0; }
@@ -195,6 +219,7 @@
       max-width: 300px;
       text-align: center;
     }
+
     /* Simple, plain hint buttons */
     .hint-btn {
       background-color: #555;
@@ -208,34 +233,40 @@
     .hint-btn:hover {
       background-color: #666;
     }
+
     .fade-in {
-  /* Start invisible */
-  opacity: 0;
-  /* Trigger the keyframe animation once appended */
-  animation: fadeIn 0.5s ease forwards;
-}
+      /* Start invisible */
+      opacity: 0;
+      /* Trigger the keyframe animation once appended */
+      animation: fadeIn 2s ease forwards;
+    }
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(-5px); /* optional small movement */
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-5px); /* optional small movement */
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-  
+    #versionNumber {
+      font-size: 13px;
+    }
 
-  
-  
+    /* Responsive placeholder text to avoid overflow on small screens */
+    #ryddleAnswer::placeholder {
+      font-size: clamp(0.8rem, 2vw, 1.2rem);
+    }
   </style>
 </head>
 <body>
   <!-- About Button in the Top Left -->
   <button id="about-nav" class="btn btn-dark btn-outline-light" data-bs-toggle="modal" data-bs-target="#aboutModal">
-    About
+    How to play 
   </button>
+
   <!-- Theme Toggle Button in the Top Right -->
   <button id="theme-toggle" class="btn btn-secondary position-absolute top-0 end-0 m-3"></button>
 
@@ -257,10 +288,10 @@
           </ul>
         </div>
         <div class="modal-footer">
-          <p class="fw-light">Version 0.3</p>
+          <p id="versionNumber" class="fw-light">Version 0.3</p>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close!</button>
         </div>
-      </div>
+      </div>`
     </div>
   </div>
 
@@ -276,6 +307,7 @@
       <div id="game-board" class="mb-4">
         <button id="play-button" type="button" class="btn btn-dark btn-outline-light">Play!</button>
       </div>
+
       <!-- Ryddle Section (hidden initially) -->
       <div id="ryddle-section" class="d-none">
         <!-- The daily Ryddle text will be filled in here by our fetch call -->
@@ -295,22 +327,37 @@
           <p id="hint-text" class="text-warning fw-bold"></p>
         </div>
 
-        <!-- Single parent container for the input group, result message, error marks, incorrect guesses -->
-        <div class="w-50 mx-auto text-center">
-          <!-- Input group for answer and Guess button -->
-          <div class="input-group">
-            <input type="text" id="ryddleAnswer" class="form-control text-center w-50 mx-auto" placeholder="Enter your answer">
-            <button id="submit-ryddle" type="button" class="btn btn-dark btn-outline-light">Guess</button>
+        <!-- Centered container for input, result message, error marks, incorrect guesses -->
+        <div class="container text-center">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-6">
+              <!-- Input group for answer and Guess button -->
+              <div class="input-group mb-3">
+                <input 
+                  type="text" 
+                  id="ryddleAnswer" 
+                  class="form-control text-center" 
+                  placeholder="Enter your answer"
+                >
+                <button 
+                  id="submit-ryddle" 
+                  type="button" 
+                  class="btn btn-dark btn-outline-light"
+                >
+                  Guess
+                </button>
+              </div>
+
+              <!-- Container for displaying warning/error messages below the input -->
+              <div id="result-message" class="mt-2"></div>
+
+              <!-- Error counter container for red X's -->
+              <div id="error-counter" class="mt-2"></div>
+
+              <!-- Container for displaying each incorrect guess below the error marks -->
+              <div id="incorrect-guesses" class="mt-2 lead"></div>
+            </div>
           </div>
-
-          <!-- Container for displaying warning/error messages below the input -->
-          <div id="result-message" class="mt-2"></div>
-
-          <!-- Error counter container for red X's -->
-          <div id="error-counter" class="mt-2"></div>
-
-          <!-- Container for displaying each incorrect guess below the error marks -->
-          <div id="incorrect-guesses" class="mt-2 lead"></div>
         </div>
       </div>
     </div>
@@ -462,15 +509,16 @@
 
               let shakeAmount = (incorrectCount * 5) + "px";
               answerInput.style.setProperty("--shake-amt", shakeAmount);
-                // Red X
-                const errorMark = document.createElement('span');
-                errorMark.innerHTML = "&#10007;";
-                errorMark.classList.add("error-mark", "fade-in");
-                errorCounter.appendChild(errorMark);
+
+              // Red X
+              const errorMark = document.createElement('span');
+              errorMark.innerHTML = "&#10007;";
+              errorMark.classList.add("error-mark", "fade-in");
+              errorCounter.appendChild(errorMark);
 
               // Show the incorrect guess
               const wrongWord = document.createElement('div');
-              wrongWord.classList.add("incorrect-guess", "fade-in"); // <-- fade in
+              wrongWord.classList.add("incorrect-guess", "fade-in");
               wrongWord.textContent = answerInput.value.trim();
               incorrectGuesses.appendChild(wrongWord);
 
@@ -499,7 +547,7 @@
                 submitRyddleButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-danger', 'btn-success');
                 submitRyddleButton.classList.add('btn-danger', 'check-animation');
                 setTimeout(() => {
-                  resultMessage.innerHTML = `<h2>Oops, try again tomorrow! The answer was: ${window.correctAnswer}</h2>`;
+                  resultMessage.innerHTML = `<h2>Oops, try again tomorrow! The answer was: ${window .correctAnswer}</h2>`;
                   resultMessage.classList.add("fail");
                 }, 500);
               }

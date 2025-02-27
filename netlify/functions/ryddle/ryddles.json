@@ -1,15 +1,15 @@
 [
   {
-    "date": "2025-02-27",
+    "date": "2025-02-26",
     "riddle": "What has to be broken before you can use it?",
     "answer": "egg",
     "hint": "crack on"
   },
   {
-    "date": "2025-02-26",
-    "riddle": "I speak without a mouth and hear without ears. What am I?",
-    "answer": "echo",
-    "hint": "it repeats by itself!"
+    "date": "2025-02-27",
+    "riddle": "I’m found in socks, scarves and mittens; and often in the paws of playful kittens. What am I?",
+    "answer": "yarn",
+    "hint": "Spun delight: a tangled tease for playful paws."
   },
   {
     "date": "2025-02-28",
@@ -28,7 +28,92 @@
     "riddle": "What can you break, even if you never pick it up or touch it?",
     "answer": "A promise",
     "hint": "This rings a bell..."
+  },
+  {
+    "date": "2025-03-01",
+    "riddle": "I have keys but no locks. I have space but no room. You can enter, but you can't go outside. What am I?",
+    "answer": "keyboard",
+    "hint": "Press on: keys, space, and enter in sequence."
+  },
+  {
+    "date": "2025-03-02",
+    "riddle": "What gets wetter the more it dries?",
+    "answer": "towel",
+    "hint": "Paradox in cloth: absorbs moisture to dry."
+  },
+  {
+    "date": "2025-03-03",
+    "riddle": "What begins with an 'e' and only contains one letter?",
+    "answer": "envelope",
+    "hint": "Starts with E, encasing a solitary letter within."
+  },
+  {
+    "date": "2025-03-04",
+    "riddle": "I'm tall when I'm young, and I'm short when I'm old. What am I?",
+    "answer": "candle",
+    "hint": "Burns down in stature as time melts away."
+  },
+  {
+    "date": "2025-03-05",
+    "riddle": "What has a head, a tail, is brown, and has no legs?",
+    "answer": "a penny",
+    "hint": "Copper coin: sporting head and tail, yet footless."
+  },
+  {
+    "date": "2025-03-06",
+    "riddle": "What can travel around the world while staying in a corner?",
+    "answer": "stamp",
+    "hint": "Affixed voyager: postal sticker in a corner."
+  },
+  {
+    "date": "2025-03-07",
+    "riddle": "I have branches, but no fruit, trunk, or leaves. What am I?",
+    "answer": "bank",
+    "hint": "Financial tree: branches extend sans foliage."
+  },
+  {
+    "date": "2025-03-08",
+    "riddle": "What has many teeth, but can’t bite?",
+    "answer": "comb",
+    "hint": "Row of teeth that tames unruly strands."
+  },
+  {
+    "date": "2025-03-09",
+    "riddle": "What has a neck but no head?",
+    "answer": "bottle",
+    "hint": "Curved container: sporting a neck without a crown."
+  },
+  {
+    "date": "2025-03-10",
+    "riddle": "What is so fragile that saying its name breaks it?",
+    "answer": "silence",
+    "hint": "A quiet state shattered by even a whisper."
+  },
+  {
+    "date": "2025-03-11",
+    "riddle": "I’m light as a feather, yet the strongest man can’t hold me for more than 5 minutes. What am I?",
+    "answer": "breath",
+    "hint": "Vital exhale: fleeting and hard to grasp."
+  },
+  {
+    "date": "2025-03-12",
+    "riddle": "What invention lets you look right through a wall?",
+    "answer": "window",
+    "hint": "Transparent portal defying solid brick."
+  },
+  {
+    "date": "2025-03-13",
+    "riddle": "What begins with T, ends with T, and has T in it?",
+    "answer": "teapot",
+    "hint": "Brew-holder: enclosed by T's at both ends."
+  },
+  {
+    "date": "2025-03-14",
+    "riddle": "I speak without a mouth and hear without ears. What am I?",
+    "answer": "echo",
+    "hint": "it repeats by itself!"
   }
+
 ]
 
 
