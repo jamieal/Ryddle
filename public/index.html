@@ -10,6 +10,7 @@
     rel="stylesheet" 
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
     crossorigin="anonymous">
+
   <style>
     @media (max-width: 576px) {
       #riddleAnswer {
@@ -82,6 +83,7 @@
       min-height: 50px;
       margin-top: 1rem;
     }
+
     /* Shake animation with dynamic shake amount (default 5px) */
     @keyframes shake {
       0% { transform: translateX(0); }
@@ -111,6 +113,9 @@
       padding: 2px 4px;
       margin-right: 0.2rem;
       display: inline-block;
+      font-size: 1.5rem;      /* bigger text size */
+      border-radius: 0.25rem; /* slightly rounded corners */
+      
     }
     /* Incorrect guess text with a softer pink color */
     .incorrect-guess {
@@ -147,25 +152,83 @@
       border-radius: 5px;
       transition: opacity 0.5s ease;
     }
+
+    /* Fade in for overlay on 4th guess */
+    @keyframes fadeInOverlay {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    .fade-in-overlay {
+      animation: fadeInOverlay 0.8s forwards;
+    }
+
+    /* NEW: Fade out for overlay on yes/no */
+    @keyframes fadeOutOverlay {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    .fade-out-overlay {
+      animation: fadeOutOverlay 0.8s forwards;
+    }
+
+    /* Dark, semi-transparent overlay for the hint popup */
     .overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0,0,0,0.5);
+      background-color: rgba(52,58,64,0.8); /* dark, semi-transparent */
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 2000;
+      opacity: 0; /* starts invisible, fadeInOverlay will set to 1 */
     }
+
+    /* Dark background for the hint box, matching dark theme */
     .hint-box {
-      background-color: #fff;
+      background-color: #343a40;
+      color: #fff;
       padding: 1rem;
       border-radius: 8px;
       max-width: 300px;
       text-align: center;
     }
+    /* Simple, plain hint buttons */
+    .hint-btn {
+      background-color: #555;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin: 0.5rem;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .hint-btn:hover {
+      background-color: #666;
+    }
+    .fade-in {
+  /* Start invisible */
+  opacity: 0;
+  /* Trigger the keyframe animation once appended */
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px); /* optional small movement */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+  
+
+  
+  
   </style>
 </head>
 <body>
@@ -194,7 +257,7 @@
           </ul>
         </div>
         <div class="modal-footer">
-          <p class="fw-light" >Version 0.3</p>
+          <p class="fw-light">Version 0.3</p>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close!</button>
         </div>
       </div>
@@ -222,8 +285,8 @@
         <div id="hint-overlay" class="d-none overlay">
           <div class="hint-box">
             <p>Would you like a hint?</p>
-            <button id="yes-hint" class="btn btn-primary m-2">Yes</button>
-            <button id="no-hint" class="btn btn-secondary m-2">No</button>
+            <button id="yes-hint" class="hint-btn">Yes</button>
+            <button id="no-hint" class="hint-btn">No</button>
           </div>
         </div>
 
@@ -232,10 +295,7 @@
           <p id="hint-text" class="text-warning fw-bold"></p>
         </div>
 
-        <!-- 
-          Single parent container for the input group, 
-          result message, error marks, and incorrect guesses.
-        -->
+        <!-- Single parent container for the input group, result message, error marks, incorrect guesses -->
         <div class="w-50 mx-auto text-center">
           <!-- Input group for answer and Guess button -->
           <div class="input-group">
@@ -250,7 +310,7 @@
           <div id="error-counter" class="mt-2"></div>
 
           <!-- Container for displaying each incorrect guess below the error marks -->
-          <div id="incorrect-guesses" class="mt-2"></div>
+          <div id="incorrect-guesses" class="mt-2 lead"></div>
         </div>
       </div>
     </div>
@@ -283,6 +343,7 @@
       const incorrectGuesses = document.getElementById('incorrect-guesses');
       const answerInput = document.getElementById('ryddleAnswer');
       const resultMessage = document.getElementById('result-message');
+      const hintOverlay = document.getElementById('hint-overlay');
       let incorrectCount = 0;
       let previousAttempts = [];
 
@@ -392,23 +453,27 @@
               // Incorrect answer logic
               incorrectCount++;
 
-              // On 4th wrong guess, show hint overlay
+              // On 4th wrong guess, fade in the hint overlay
               if (incorrectCount === 4) {
-                document.getElementById('hint-overlay').classList.remove('d-none');
+                hintOverlay.classList.remove('d-none');
+                hintOverlay.classList.remove('fade-out-overlay'); 
+                hintOverlay.classList.add('fade-in-overlay');
               }
 
               let shakeAmount = (incorrectCount * 5) + "px";
               answerInput.style.setProperty("--shake-amt", shakeAmount);
-              // Red X
-              const errorMark = document.createElement('span');
-              errorMark.innerHTML = "&#10007;";
-              errorMark.className = "error-mark";
-              errorCounter.appendChild(errorMark);
+                // Red X
+                const errorMark = document.createElement('span');
+                errorMark.innerHTML = "&#10007;";
+                errorMark.classList.add("error-mark", "fade-in");
+                errorCounter.appendChild(errorMark);
+
               // Show the incorrect guess
               const wrongWord = document.createElement('div');
-              wrongWord.className = "incorrect-guess";
+              wrongWord.classList.add("incorrect-guess", "fade-in"); // <-- fade in
               wrongWord.textContent = answerInput.value.trim();
               incorrectGuesses.appendChild(wrongWord);
+
               // Change button to red X, shake input
               submitRyddleButton.innerHTML = "&#10007;";
               submitRyddleButton.classList.remove('btn-dark', 'btn-outline-light');
@@ -447,17 +512,31 @@
 
       // 6) YES/NO hint button listeners
       document.getElementById('yes-hint').addEventListener('click', function() {
-        // Hide overlay
-        document.getElementById('hint-overlay').classList.add('d-none');
+        // Start fade-out animation
+        hintOverlay.classList.remove('fade-in-overlay');
+        hintOverlay.classList.add('fade-out-overlay');
+        // After fade-out completes, hide overlay
+        setTimeout(() => {
+          hintOverlay.classList.add('d-none');
+          hintOverlay.classList.remove('fade-out-overlay');
+        }, 800);
+
         // Show hint container
-        document.getElementById('hint-container').classList.remove('d-none');
+        const hintContainer = document.getElementById('hint-container');
+        hintContainer.classList.remove('d-none');
         // Insert the hint text
         document.getElementById('hint-text').textContent = window.currentHint;
       });
 
       document.getElementById('no-hint').addEventListener('click', function() {
-        // Hide overlay
-        document.getElementById('hint-overlay').classList.add('d-none');
+        // Start fade-out animation
+        hintOverlay.classList.remove('fade-in-overlay');
+        hintOverlay.classList.add('fade-out-overlay');
+        // After fade-out completes, hide overlay
+        setTimeout(() => {
+          hintOverlay.classList.add('d-none');
+          hintOverlay.classList.remove('fade-out-overlay');
+        }, 800);
       });
     });
   </script>
