@@ -16,7 +16,7 @@
    
 
     /* On very small screens, reset body zoom */
-    @media (max-width: 576px) {
+    @media (max-width: 700px) {
       #riddleAnswer {
         font-size: 1rem;
       }
@@ -28,12 +28,12 @@
     /* Prevent scrolling by fixing height and hiding overflow */
     html, body {
       height: 100%;
-      overflow: hidden;
+      overflow-y: hidden;
     }
 
     /* Base font size slightly bigger, then conditionally zoom for wider screens */
     body {
-      font-size: 1.2rem;
+      font-size: 1.0rem;
     }
     @media (min-width: 576px) {
       body {
@@ -281,10 +281,11 @@
         <div class="modal-body">
           <p>Ryddle is a quizical inspired game that challenges you to guess the answer to a Ryddle within the following criteria:</p>
           <ul class="list-group">
-            <li class="list-group-item">You have 5 guesses</li>
-            <li class="list-group-item">The answer may contain words like "a" or "an". You won't be penalised if you don't use it.</li>
-            <li class="list-group-item">If you guess 5 times incorrectly, the Ryddle will be shown to you.</li>
-            <li class="list-group-item">Only one Ryddle a day!</li>
+            <li class="list-group-item">You have 5 guesses.</li>
+            <li class="list-group-item">The answer should be limited to one word. 
+            <li class="list-group-item">After <span class="fw-bold">4 incorrect guesses</span>, you can choose to receive a hint.</li>
+            <li class="list-group-item">After <span class="fw-bold">5 incorrect guesses</span>,, the Ryddle will be presented to you.</li>
+            <li class="list-group-item">There will be a new Ryddle every day.</li>
           </ul>
         </div>
         <div class="modal-footer">
@@ -336,7 +337,7 @@
                 <input 
                   type="text" 
                   id="ryddleAnswer" 
-                  class="form-control text-center" 
+                  class="form-control text-center .col-12" 
                   placeholder="Enter your answer"
                 >
                 <button 
