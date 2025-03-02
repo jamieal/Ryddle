@@ -11,7 +11,6 @@
     rel="stylesheet" 
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
     crossorigin="anonymous">
-
   <style>
    
 
@@ -30,27 +29,18 @@
       height: 100%;
       overflow-y: hidden;
     }
-
-    /* Base font size slightly bigger, then conditionally zoom for wider screens */
     body {
       font-size: 1.0rem;
     }
     @media (min-width: 576px) {
       body {
-        zoom: 1.2; /* Zoom for bigger screens if desired */
+        zoom: 1.2;
       }
     }
-
-    /* Light mode background: slightly darker */
     html[data-bs-theme="light"] body {
       background-color: #e0e0e0;
     }
-
-    /* Theme toggle button */
-    #theme-toggle {
-      z-index: 9999;
-    }
-
+    
     /* Fixed header for the title */
     #header-container {
       position: fixed;
@@ -63,14 +53,10 @@
       background: inherit;
       z-index: 1000;
     }
-
-    /* Reserve space for the header */
     #main-content {
       margin-top: 120px;
       height: calc(100% - 120px);
     }
-
-    /* Content wrapper centers interactive elements without shifting content */
     #content-wrapper {
       height: 100%;
       display: flex;
@@ -79,8 +65,23 @@
       justify-content: center;
       text-align: center;
     }
-
-    /* Make the Play button larger */
+    
+    /* Fixed buttons: About and Theme Toggle */
+    .fixed-btn {
+      position: fixed;
+      top: 10px;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      z-index: 1200;
+    }
+    #about-nav.fixed-btn {
+      left: 10px;
+    }
+    #theme-toggle.fixed-btn {
+      right: 10px;
+    }
+    
+    /* Play button styling */
     #play-button {
       font-size: 1.5rem;
       padding: 0.75rem 1.5rem;
@@ -90,19 +91,38 @@
       opacity: 0;
       transition: opacity 1s ease-out;
     }
-
-    /* Reserve space so that error messages don't shift content */
-    #error-counter, #incorrect-guesses {
-      min-height: 30px;
+    
+    /* Answer container: forces enough width for full placeholder */
+    .answer-container {
+      max-width: 600px;
+      width: 100%;
+      margin: 0 auto;
     }
-
-    /* Allocate a fixed space for result messages below the guess box */
+    
+    /* Input styling: let the placeholder display fully */
+    #ryddleAnswer {
+      /* Let Bootstrap control the width */
+    }
+    #ryddleAnswer::placeholder {
+      font-size: 1.2rem;
+      white-space: nowrap;
+    }
+    @media (max-width: 576px) {
+      #ryddleAnswer::placeholder {
+         font-size: 1rem;
+      }
+    }
+    
+    /* Reserve space for error/result messages */
     #result-message {
       min-height: 50px;
       margin-top: 1rem;
     }
-
-    /* Shake animation with dynamic shake amount (default 5px) */
+    #error-counter, #incorrect-guesses {
+      min-height: 30px;
+    }
+    
+    /* Animations */
     @keyframes shake {
       0% { transform: translateX(0); }
       25% { transform: translateX(calc(-1 * var(--shake-amt, 5px))); }
@@ -113,8 +133,6 @@
     .shake {
       animation: shake 0.5s;
     }
-
-    /* Pop animation for feedback on the Guess button */
     @keyframes pop {
       0% { transform: scale(0); opacity: 0; }
       50% { transform: scale(1.2); opacity: 1; }
@@ -123,8 +141,6 @@
     .check-animation {
       animation: pop 0.5s ease-out;
     }
-
-    /* Error mark styling: red X with heavier border and bolder text; closer spacing */
     .error-mark {
       font-weight: bolder;
       color: red;
@@ -133,24 +149,12 @@
       padding: 2px 4px;
       margin-right: 0.2rem;
       display: inline-block;
-      font-size: 1.5rem;      /* bigger text size */
-      border-radius: 0.25rem; /* slightly rounded corners */
+      font-size: 1.5rem;
+      border-radius: 0.25rem;
     }
-
-    /* Incorrect guess text with a softer pink color */
     .incorrect-guess {
       color: #ffb3b3;
     }
-
-    /* Position About button in the top left */
-    #about-nav {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      z-index: 1100;
-    }
-
-    /* Celebration styling: green background for correct answer message */
     .celebrate {
       background-color: #28a745;
       color: white;
@@ -158,8 +162,6 @@
       border-radius: 5px;
       transition: background-color 0.5s ease;
     }
-
-    /* Failure styling: red background for failure message */
     .fail {
       background-color: #dc3545;
       color: white;
@@ -167,8 +169,6 @@
       border-radius: 5px;
       transition: background-color 0.5s ease;
     }
-
-    /* Duplicate/Invalid word message styling with semi-transparent background */
     .duplicate {
       background: rgba(255, 193, 7, 0.8);
       color: black;
@@ -176,8 +176,6 @@
       border-radius: 5px;
       transition: opacity 0.5s ease;
     }
-
-    /* Fade in for overlay on 4th guess */
     @keyframes fadeInOverlay {
       0% { opacity: 0; }
       100% { opacity: 1; }
@@ -185,8 +183,6 @@
     .fade-in-overlay {
       animation: fadeInOverlay 0.8s forwards;
     }
-
-    /* Fade out for overlay on yes/no */
     @keyframes fadeOutOverlay {
       0% { opacity: 1; }
       100% { opacity: 0; }
@@ -194,23 +190,19 @@
     .fade-out-overlay {
       animation: fadeOutOverlay 0.8s forwards;
     }
-
-    /* Dark, semi-transparent overlay for the hint popup */
     .overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(52,58,64,0.8); /* dark, semi-transparent */
+      background-color: rgba(52,58,64,0.8);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 2000;
-      opacity: 0; /* starts invisible, fadeInOverlay will set to 1 */
+      opacity: 0;
     }
-
-    /* Dark background for the hint box, matching dark theme */
     .hint-box {
       background-color: #343a40;
       color: #fff;
@@ -219,8 +211,6 @@
       max-width: 300px;
       text-align: center;
     }
-
-    /* Simple, plain hint buttons */
     .hint-btn {
       background-color: #555;
       color: #fff;
@@ -233,44 +223,34 @@
     .hint-btn:hover {
       background-color: #666;
     }
-
     .fade-in {
-      /* Start invisible */
       opacity: 0;
-      /* Trigger the keyframe animation once appended */
       animation: fadeIn 2s ease forwards;
     }
     @keyframes fadeIn {
       0% {
         opacity: 0;
-        transform: translateY(-5px); /* optional small movement */
+        transform: translateY(-5px);
       }
       100% {
         opacity: 1;
         transform: translateY(0);
       }
     }
-
     #versionNumber {
       font-size: 13px;
-    }
-
-    /* Responsive placeholder text to avoid overflow on small screens */
-    #ryddleAnswer::placeholder {
-      font-size: clamp(0.8rem, 2vw, 1.2rem);
     }
   </style>
 </head>
 <body>
-  <!-- About Button in the Top Left -->
-  <button id="about-nav" class="btn btn-dark btn-outline-light" data-bs-toggle="modal" data-bs-target="#aboutModal">
+  <!-- About Button (unchanged) -->
+  <button id="about-nav" class="btn btn-dark btn-outline-light fixed-btn" data-bs-toggle="modal" data-bs-target="#aboutModal">
     How to play 
   </button>
-
-  <!-- Theme Toggle Button in the Top Right -->
-  <button id="theme-toggle" class="btn btn-secondary position-absolute top-0 end-0 m-3"></button>
-
-  <!-- About Modal -->
+  <!-- Theme Toggle Button (unchanged) -->
+  <button id="theme-toggle" class="btn btn-secondary fixed-btn"></button>
+  
+  <!-- About Modal (unchanged) -->
   <div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -292,29 +272,26 @@
           <p id="versionNumber" class="fw-light">Version 0.</p>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close!</button>
         </div>
-      </div>`
+      </div>
     </div>
   </div>
-
+  
   <!-- Fixed Header: Title -->
   <div id="header-container">
     <h1 id="title" class="display-1">Ryddle</h1>
   </div>
-
-  <!-- Main Content Container -->
+  
+  <!-- Main Content -->
   <div id="main-content">
     <div id="content-wrapper">
-      <!-- Game Board Section: Initially show the Play button -->
+      <!-- Game Board Section -->
       <div id="game-board" class="mb-4">
         <button id="play-button" type="button" class="btn btn-dark btn-outline-light">Play!</button>
       </div>
-
-      <!-- Ryddle Section (hidden initially) -->
+      <!-- Ryddle Section (initially hidden) -->
       <div id="ryddle-section" class="d-none">
-        <!-- The daily Ryddle text will be filled in here by our fetch call -->
         <p id="ryddle-text" class="fs-3"></p>
-
-        <!-- Transparent overlay for the hint popup -->
+        <!-- Hint Overlay -->
         <div id="hint-overlay" class="d-none overlay">
           <div class="hint-box">
             <p>Would you like a hint?</p>
@@ -322,8 +299,7 @@
             <button id="no-hint" class="hint-btn">No</button>
           </div>
         </div>
-
-        <!-- Container to display the hint once accepted -->
+        <!-- Hint Container -->
         <div id="hint-container" class="mt-2 d-none">
           <p id="hint-text" class="text-warning fw-bold"></p>
         </div>
@@ -359,20 +335,23 @@
               <div id="incorrect-guesses" class="mt-2 lead"></div>
             </div>
           </div>
+          <!-- Error/Result Message Container: reserved space -->
+          <div id="result-message"></div>
+          <div id="error-counter" class="mt-2"></div>
+          <div id="incorrect-guesses" class="mt-2 lead"></div>
         </div>
       </div>
     </div>
   </div>
-
+  
   <!-- Bootstrap JS Bundle -->
   <script 
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
     crossorigin="anonymous"></script>
-
   <script>
     document.addEventListener('DOMContentLoaded', function(){
-      // 1) Fetch the daily Ryddle and store the answer/hint
+      // Fetch the daily Ryddle and set answer/hint
       fetch('/.netlify/functions/ryddle')
         .then(response => response.json())
         .then(data => {
@@ -381,8 +360,8 @@
           window.currentHint = data.hint;
         })
         .catch(error => console.error('Error fetching Ryddle:', error));
-
-      // 2) Setup references and variables
+      
+      // Setup references
       const themeToggleButton = document.getElementById('theme-toggle');
       const playButton = document.getElementById('play-button');
       const ryddleSection = document.getElementById('ryddle-section');
@@ -394,8 +373,8 @@
       const hintOverlay = document.getElementById('hint-overlay');
       let incorrectCount = 0;
       let previousAttempts = [];
-
-      // 3) Theme toggle logic
+      
+      // Theme toggle logic
       function updateThemeButtonText() {
         const currentTheme = document.documentElement.getAttribute('data-bs-theme');
         themeToggleButton.textContent = currentTheme === 'dark' ? "Light Mode" : "Dark Mode";
@@ -408,8 +387,8 @@
         html.setAttribute('data-bs-theme', newTheme);
         updateThemeButtonText();
       });
-
-      // 4) Play button logic
+      
+      // Play button logic
       playButton.addEventListener('click', function() {
   const hasSeenTutorial = localStorage.getItem('hasSeenHowToPlay');
 
@@ -443,80 +422,56 @@
     }, 1200);
   }
       });
-
-      // 5) Submit guess logic
-      // Allow submission via Enter key
+      
+      // Submit guess logic
       answerInput.addEventListener('keydown', function(event) {
         if (event.key === "Enter") {
           event.preventDefault();
           submitRyddleButton.click();
         }
       });
-
       function showMessage(message) {
         resultMessage.innerHTML = `<div class='duplicate'>${message}</div>`;
-        setTimeout(() => {
-          resultMessage.innerHTML = "";
-        }, 2000);
+        setTimeout(() => { resultMessage.innerHTML = ""; }, 2000);
       }
-
       submitRyddleButton.addEventListener('click', function() {
         const answer = answerInput.value.trim().toLowerCase();
-
-        // Empty input check
         if (answer === "") {
           answerInput.classList.add('shake');
-          setTimeout(() => {
-            answerInput.classList.remove('shake');
-          }, 1000);
+          setTimeout(() => { answerInput.classList.remove('shake'); }, 1000);
           return;
         }
-
-        // Only letters check
         if (!/^[a-z]+$/.test(answer)) {
           showMessage("Please enter a valid word.");
           answerInput.classList.add('shake');
-          setTimeout(() => {
-            answerInput.classList.remove('shake');
-          }, 2000);
+          setTimeout(() => { answerInput.classList.remove('shake'); }, 2000);
           return;
         }
-
-        // Dictionary check
         fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${answer}`)
           .then(response => {
             if (!response.ok) {
               showMessage("Please enter a valid word.");
               answerInput.classList.add('shake');
-              setTimeout(() => {
-                answerInput.classList.remove('shake');
-              }, 2000);
+              setTimeout(() => { answerInput.classList.remove('shake'); }, 2000);
               throw new Error("Invalid word");
             }
             return response.json();
           })
           .then(data => {
-            // Duplicate guess check
             if (previousAttempts.includes(answer)) {
               ryddleSection.classList.add('shake');
               showMessage("Answer already given");
-              setTimeout(() => {
-                ryddleSection.classList.remove('shake');
-              }, 1000);
+              setTimeout(() => { ryddleSection.classList.remove('shake'); }, 1000);
               return;
             }
-
-            // Record attempt
             previousAttempts.push(answer);
-
-            // Correct answer check
             if (answer === window.correctAnswer) {
               answerInput.disabled = true;
               submitRyddleButton.disabled = true;
               answerInput.style.fontWeight = "bold";
               submitRyddleButton.innerHTML = "&#10003;";
-              submitRyddleButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-danger');
-              submitRyddleButton.classList.add('btn-success', 'check-animation');
+              submitRyddleButton.classList.remove('btn-dark','btn-outline-light','btn-danger');
+              submitRyddleButton.classList.add('btn-success','check-animation');
               if (incorrectCount < 5) {
                 setTimeout(() => {
                   resultMessage.innerHTML = "<h2>Congratulations! You got it right!</h2>";
@@ -524,90 +479,67 @@
                 }, 500);
               }
             } else {
-              // Incorrect answer logic
               incorrectCount++;
-
-              // On 4th wrong guess, fade in the hint overlay
               if (incorrectCount === 4) {
                 hintOverlay.classList.remove('d-none');
                 hintOverlay.classList.remove('fade-out-overlay'); 
                 hintOverlay.classList.add('fade-in-overlay');
               }
-
               let shakeAmount = (incorrectCount * 5) + "px";
               answerInput.style.setProperty("--shake-amt", shakeAmount);
-
-              // Red X
               const errorMark = document.createElement('span');
               errorMark.innerHTML = "&#10007;";
-              errorMark.classList.add("error-mark", "fade-in");
+              errorMark.classList.add("error-mark","fade-in");
               errorCounter.appendChild(errorMark);
-
-              // Show the incorrect guess
               const wrongWord = document.createElement('div');
-              wrongWord.classList.add("incorrect-guess", "fade-in");
+              wrongWord.classList.add("incorrect-guess","fade-in");
               wrongWord.textContent = answerInput.value.trim();
               incorrectGuesses.appendChild(wrongWord);
-
-              // Change button to red X, shake input
               submitRyddleButton.innerHTML = "&#10007;";
-              submitRyddleButton.classList.remove('btn-dark', 'btn-outline-light');
+              submitRyddleButton.classList.remove('btn-dark','btn-outline-light');
               submitRyddleButton.classList.add('btn-danger');
               answerInput.classList.add('shake');
-
               setTimeout(() => {
                 answerInput.classList.remove('shake');
                 if (incorrectCount < 5) {
                   submitRyddleButton.innerHTML = "Guess";
                   submitRyddleButton.classList.remove('btn-danger');
-                  submitRyddleButton.classList.add('btn-dark', 'btn-outline-light');
+                  submitRyddleButton.classList.add('btn-dark','btn-outline-light');
                 }
               }, 1000);
-
-              // If 5 or more incorrect attempts, show the answer
               if (incorrectCount >= 5) {
                 answerInput.value = window.correctAnswer;
                 answerInput.disabled = true;
                 submitRyddleButton.disabled = true;
                 answerInput.style.fontWeight = "bold";
                 submitRyddleButton.innerHTML = "&#10007;";
-                submitRyddleButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-danger', 'btn-success');
-                submitRyddleButton.classList.add('btn-danger', 'check-animation');
+                submitRyddleButton.classList.remove('btn-dark','btn-outline-light','btn-danger','btn-success');
+                submitRyddleButton.classList.add('btn-danger','check-animation');
                 setTimeout(() => {
-                  resultMessage.innerHTML = `<h2>Oops, try again tomorrow! The answer was: ${window .correctAnswer}</h2>`;
+                  resultMessage.innerHTML = `<h2>Oops, try again tomorrow! The answer was: ${window.correctAnswer}</h2>`;
                   resultMessage.classList.add("fail");
                 }, 500);
               }
             }
           })
-          .catch(error => {
-            console.error(error);
-          });
+          .catch(error => { console.error(error); });
       });
-
-      // 6) YES/NO hint button listeners
+      
+      // YES/NO hint button listeners
       document.getElementById('yes-hint').addEventListener('click', function() {
-        // Start fade-out animation
         hintOverlay.classList.remove('fade-in-overlay');
         hintOverlay.classList.add('fade-out-overlay');
-        // After fade-out completes, hide overlay
         setTimeout(() => {
           hintOverlay.classList.add('d-none');
           hintOverlay.classList.remove('fade-out-overlay');
         }, 800);
-
-        // Show hint container
         const hintContainer = document.getElementById('hint-container');
         hintContainer.classList.remove('d-none');
-        // Insert the hint text
         document.getElementById('hint-text').textContent = window.currentHint;
       });
-
       document.getElementById('no-hint').addEventListener('click', function() {
-        // Start fade-out animation
         hintOverlay.classList.remove('fade-in-overlay');
         hintOverlay.classList.add('fade-out-overlay');
-        // After fade-out completes, hide overlay
         setTimeout(() => {
           hintOverlay.classList.add('d-none');
           hintOverlay.classList.remove('fade-out-overlay');
