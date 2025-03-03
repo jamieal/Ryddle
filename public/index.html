@@ -115,9 +115,27 @@
     
     /* Reserve space for error/result messages */
     #result-message {
-      min-height: 50px;
-      margin-top: 1rem;
-    }
+    min-height: 50px;       /* Reserve some space */
+    padding: 1rem;          /* Ensure there's enough internal space */
+    width: 100%;
+    box-sizing: border-box; /* Make padding included in width calculation */
+    overflow: visible;      /* Allow content to expand */
+  }
+  /* Style for both success and error messages */
+  #result-message.celebrate,
+  #result-message.fail {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1rem;   /* adjust padding as needed */
+  }
+
+    /* Remove extra margins from the heading */
+  #result-message.celebrate h2,
+  #result-message.fail h2 {
+    margin: 0;
+    padding: 0;      /* padding is now handled by the container */
+  }
     #error-counter, #incorrect-guesses {
       min-height: 30px;
     }
@@ -152,15 +170,24 @@
       font-size: 1.5rem;
       border-radius: 0.25rem;
     }
-    .incorrect-guess {
-      color: #ffb3b3;
-    }
+   /* .incorrect-guess {
+      color: #ffb3b3; 
+    }*/ 
+
+    html[data-bs-theme="dark"] .incorrect-guess {
+  color: #ffb3b3;
+}
+    /* For light mode, apply a darker red */
+html[data-bs-theme="light"] .incorrect-guess {
+  color: #4a0505;
+}
     .celebrate {
       background-color: #28a745;
       color: white;
-      padding: 1rem;
-      border-radius: 5px;
-      transition: background-color 0.5s ease;
+    padding: 1rem;
+    border-radius: 5px;
+  transition: background-color 0.5s ease;
+ 
     }
     .fail {
       background-color: #dc3545;
@@ -240,6 +267,21 @@
     #versionNumber {
       font-size: 13px;
     }
+
+  /* Styles for elements when in light mode */
+  html[data-bs-theme="light"] .my-element {
+  color: #223078;        /* Example color for light mode */
+  font-weight: bold;  /* Example font weight for light mode */
+}
+
+/* Optionally, you can also define styles for dark mode */
+html[data-bs-theme="dark"] .my-element {
+  color: #fff;        /* Example color for dark mode */
+  font-weight: normal;/* Example font weight for dark mode */
+}
+  
+
+
   </style>
 </head>
 <body>
@@ -269,7 +311,7 @@
           </ul>
         </div>
         <div class="modal-footer">
-          <p id="versionNumber" class="fw-light">Version 0.</p>
+          <p id="versionNumber" class="fw-light">Version 0.10</p>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close!</button>
         </div>
       </div>
@@ -436,6 +478,10 @@
       }
       submitRyddleButton.addEventListener('click', function() {
         const answer = answerInput.value.trim().toLowerCase();
+        // flag to track the correctnesss
+        let answerIsCorrect = false;
+
+
         if (answer === "") {
           answerInput.classList.add('shake');
           setTimeout(() => { answerInput.classList.remove('shake'); }, 1000);
@@ -466,6 +512,7 @@
             }
             previousAttempts.push(answer);
             if (answer === window.correctAnswer) {
+              answerIsCorrect = true; //correct marking
               answerInput.disabled = true;
               submitRyddleButton.disabled = true;
               answerInput.style.fontWeight = "bold";
@@ -522,7 +569,16 @@
               }
             }
           })
-          .catch(error => { console.error(error); });
+          .catch(error => { 
+      console.error(error);
+    }) 
+    .finally(() => {
+      // Clear the input field after processing the guess
+      if (!answerIsCorrect) {
+        answerInput.value = "";
+      }
+      
+    });
       });
       
       // YES/NO hint button listeners
