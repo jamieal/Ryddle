@@ -12,25 +12,22 @@
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
     crossorigin="anonymous">
   <style>
-   
-
     /* On very small screens, reset body zoom */
     @media (max-width: 700px) {
-      #riddleAnswer {
+      #ryddleAnswer {
         font-size: 1rem;
       }
       body {
         zoom: 1; 
       }
     }
-
     /* Prevent scrolling by fixing height and hiding overflow */
     html, body {
       height: 100%;
       overflow-y: hidden;
     }
     body {
-      font-size: 1.0rem;
+      font-size: 1rem;
     }
     @media (min-width: 576px) {
       body {
@@ -40,7 +37,6 @@
     html[data-bs-theme="light"] body {
       background-color: #e0e0e0;
     }
-    
     /* Fixed header for the title */
     #header-container {
       position: fixed;
@@ -65,7 +61,6 @@
       justify-content: center;
       text-align: center;
     }
-    
     /* Fixed buttons: About and Theme Toggle */
     .fixed-btn {
       position: fixed;
@@ -80,7 +75,6 @@
     #theme-toggle.fixed-btn {
       right: 10px;
     }
-    
     /* Play button styling */
     #play-button {
       font-size: 1.5rem;
@@ -91,17 +85,11 @@
       opacity: 0;
       transition: opacity 1s ease-out;
     }
-    
     /* Answer container: forces enough width for full placeholder */
     .answer-container {
       max-width: 600px;
       width: 100%;
       margin: 0 auto;
-    }
-    
-    /* Input styling: let the placeholder display fully */
-    #ryddleAnswer {
-      /* Let Bootstrap control the width */
     }
     #ryddleAnswer::placeholder {
       font-size: 1.2rem;
@@ -112,34 +100,30 @@
          font-size: 1rem;
       }
     }
-    
     /* Reserve space for error/result messages */
     #result-message {
-    min-height: 50px;       /* Reserve some space */
-    padding: 1rem;          /* Ensure there's enough internal space */
-    width: 100%;
-    box-sizing: border-box; /* Make padding included in width calculation */
-    overflow: visible;      /* Allow content to expand */
-  }
-  /* Style for both success and error messages */
-  #result-message.celebrate,
-  #result-message.fail {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 1rem;   /* adjust padding as needed */
-  }
-
-    /* Remove extra margins from the heading */
-  #result-message.celebrate h2,
-  #result-message.fail h2 {
-    margin: 0;
-    padding: 0;      /* padding is now handled by the container */
-  }
+      min-height: 50px;
+      padding: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: visible;
+    }
+    /* Styles for success/error messages */
+    #result-message.celebrate,
+    #result-message.fail {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 1rem;
+    }
+    #result-message.celebrate h2,
+    #result-message.fail h2 {
+      margin: 0;
+      padding: 0;
+    }
     #error-counter, #incorrect-guesses {
       min-height: 30px;
     }
-    
     /* Animations */
     @keyframes shake {
       0% { transform: translateX(0); }
@@ -170,24 +154,18 @@
       font-size: 1.5rem;
       border-radius: 0.25rem;
     }
-   /* .incorrect-guess {
-      color: #ffb3b3; 
-    }*/ 
-
     html[data-bs-theme="dark"] .incorrect-guess {
-  color: #ffb3b3;
-}
-    /* For light mode, apply a darker red */
-html[data-bs-theme="light"] .incorrect-guess {
-  color: #4a0505;
-}
+      color: #ffb3b3;
+    }
+    html[data-bs-theme="light"] .incorrect-guess {
+      color: #4a0505;
+    }
     .celebrate {
       background-color: #28a745;
       color: white;
-    padding: 1rem;
-    border-radius: 5px;
-  transition: background-color 0.5s ease;
- 
+      padding: 1rem;
+      border-radius: 5px;
+      transition: background-color 0.5s ease;
     }
     .fail {
       background-color: #dc3545;
@@ -267,32 +245,27 @@ html[data-bs-theme="light"] .incorrect-guess {
     #versionNumber {
       font-size: 13px;
     }
-
-  /* Styles for elements when in light mode */
-  html[data-bs-theme="light"] .my-element {
-  color: #223078;        /* Example color for light mode */
-  font-weight: bold;  /* Example font weight for light mode */
-}
-
-/* Optionally, you can also define styles for dark mode */
-html[data-bs-theme="dark"] .my-element {
-  color: #fff;        /* Example color for dark mode */
-  font-weight: normal;/* Example font weight for dark mode */
-}
-  
-
-
+    /* Light mode styles */
+    html[data-bs-theme="light"] .my-element {
+      color: #223078;
+      font-weight: bold;
+    }
+    /* Dark mode styles */
+    html[data-bs-theme="dark"] .my-element {
+      color: #fff;
+      font-weight: normal;
+    }
   </style>
 </head>
 <body>
-  <!-- About Button (unchanged) -->
+  <!-- About Button -->
   <button id="about-nav" class="btn btn-dark btn-outline-light fixed-btn" data-bs-toggle="modal" data-bs-target="#aboutModal">
     How to play 
   </button>
-  <!-- Theme Toggle Button (unchanged) -->
+  <!-- Theme Toggle Button -->
   <button id="theme-toggle" class="btn btn-secondary fixed-btn"></button>
   
-  <!-- About Modal (unchanged) -->
+  <!-- About Modal -->
   <div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -304,7 +277,7 @@ html[data-bs-theme="dark"] .my-element {
           <p>Ryddle is a quizical inspired game that challenges you to guess the answer to a Ryddle within the following criteria:</p>
           <ul class="list-group">
             <li class="list-group-item">You have 5 guesses.</li>
-            <li class="list-group-item">The answer should be limited to one word. 
+            <li class="list-group-item">The answer should be limited to one word.</li>
             <li class="list-group-item">After <span class="fw-bold">4 incorrect guesses</span>, you can choose to receive a hint.</li>
             <li class="list-group-item">After <span class="fw-bold">5 incorrect guesses</span>, the Ryddle will be presented to you.</li>
             <li class="list-group-item">There will be a new Ryddle every day.</li>
@@ -345,39 +318,24 @@ html[data-bs-theme="dark"] .my-element {
         <div id="hint-container" class="mt-2 d-none">
           <p id="hint-text" class="text-warning fw-bold"></p>
         </div>
-
-        <!-- Centered container for input, result message, error marks, incorrect guesses -->
-        <div class="container text-center">
-          <div class="row justify-content-center">
-            <div class="col-12 col-md-6">
-              <!-- Input group for answer and Guess button -->
-              <div class="input-group mb-3">
-                <input 
-                  type="text" 
-                  id="ryddleAnswer" 
-                  class="form-control text-center .col-12" 
-                  placeholder="Enter your answer"
-                >
-                <button 
-                  id="submit-ryddle" 
-                  type="button" 
-                  class="btn btn-dark btn-outline-light"
-                >
-                  Guess
-                </button>
-              </div>
-
-              <!-- Container for displaying warning/error messages below the input -->
-              <div id="result-message" class="mt-2"></div>
-
-              <!-- Error counter container for red X's -->
-              <div id="error-counter" class="mt-2"></div>
-
-              <!-- Container for displaying each incorrect guess below the error marks -->
-              <div id="incorrect-guesses" class="mt-2 lead"></div>
-            </div>
+        <!-- Input Group for Answer -->
+        <div class="answer-container">
+          <div class="input-group mb-3">
+            <input 
+              type="text" 
+              id="ryddleAnswer" 
+              class="form-control text-center col-12" 
+              placeholder="Enter your answer"
+            >
+            <button 
+              id="submit-ryddle" 
+              type="button" 
+              class="btn btn-dark btn-outline-light"
+            >
+              Guess
+            </button>
           </div>
-          <!-- Error/Result Message Container: reserved space -->
+          <!-- Message Containers -->
           <div id="result-message"></div>
           <div id="error-counter" class="mt-2"></div>
           <div id="incorrect-guesses" class="mt-2 lead"></div>
@@ -393,17 +351,46 @@ html[data-bs-theme="dark"] .my-element {
     crossorigin="anonymous"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function(){
-      // Fetch the daily Ryddle and set answer/hint
-      fetch('/.netlify/functions/ryddle')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('ryddle-text').textContent = data.riddle;
-          window.correctAnswer = data.answer.toLowerCase();
-          window.currentHint = data.hint;
-        })
-        .catch(error => console.error('Error fetching Ryddle:', error));
+      // Check localStorage for today's played data.
+      const today = new Date().toISOString().split('T')[0];
+      const playedData = JSON.parse(localStorage.getItem('ryddlePlayed'));
       
-      // Setup references
+      if (playedData && playedData.date === today) {
+        // User already played today. And restore their answer.
+        window.correctAnswer = playedData.answer;
+        document.getElementById('ryddleAnswer').value = playedData.answer;
+        document.getElementById('ryddleAnswer').disabled = true;
+        document.getElementById('submit-ryddle').disabled = true;
+        document.getElementById('result-message').innerHTML = `<h2>You already played today!</h2>`;
+        
+        /// Restore the button colors and the status of the game. 
+        const submitButton = document.getElementById('submit-ryddle');
+        if(playedData.status === 'correct'){
+          submitButton.innerHTML = "&#10003;";
+          submitButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-danger');
+          submitButton.classList.add('btn-success', 'check-animation');
+          document.getElementById('result-message').innerHTML = "<h2>Congratulations! You got it right!</h2>";
+          document.getElementById('result-message').classList.add("celebrate");
+        } else if (playedData.status === 'incorrect') {
+          submitButton.innerHTML = "&#10007;";
+          submitButton.classList.remove('btn-dark', 'btn-outline-light', 'btn-success');
+          submitButton.classList.add('btn-danger');
+          document.getElementById('result-message').innerHTML = `<h2>Oops, try again tomorrow! The answer was: ${window.correctAnswer}</h2>`;
+          document.getElementById('result-message').classList.add("fail");
+        }
+      } else {
+        // Fetch today's riddle since the user hasn't played yet.
+        fetch('/.netlify/functions/ryddle')
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('ryddle-text').textContent = data.riddle;
+            window.correctAnswer = data.answer.toLowerCase();
+            window.currentHint = data.hint;
+          })
+          .catch(error => console.error('Error fetching Ryddle:', error));
+      }
+    
+      // Setup references.
       const themeToggleButton = document.getElementById('theme-toggle');
       const playButton = document.getElementById('play-button');
       const ryddleSection = document.getElementById('ryddle-section');
@@ -416,7 +403,7 @@ html[data-bs-theme="dark"] .my-element {
       let incorrectCount = 0;
       let previousAttempts = [];
       
-      // Theme toggle logic
+      // Theme toggle logic.
       function updateThemeButtonText() {
         const currentTheme = document.documentElement.getAttribute('data-bs-theme');
         themeToggleButton.textContent = currentTheme === 'dark' ? "Light Mode" : "Dark Mode";
@@ -430,69 +417,64 @@ html[data-bs-theme="dark"] .my-element {
         updateThemeButtonText();
       });
       
-      // Play button logic
+      // Play button logic.
       playButton.addEventListener('click', function() {
-  const hasSeenTutorial = localStorage.getItem('hasSeenHowToPlay');
-
-  if (!hasSeenTutorial) {
-    // 1) Show the "How to play" modal
-    const aboutModalEl = document.getElementById('aboutModal');
-    const aboutModal = new bootstrap.Modal(aboutModalEl, {});
-
-    // Mark that they've now seen the tutorial
-    localStorage.setItem('hasSeenHowToPlay', 'true');
-
-    // Show the modal
-    aboutModal.show();
-
-    // 2) After the modal is closed, fade out "Play" & show the Riddle
-    aboutModalEl.addEventListener('hidden.bs.modal', function() {
-      // Only run once
-      playButton.classList.add('fade-out');
-      setTimeout(() => {
-        playButton.style.display = "none";
-        ryddleSection.classList.remove('d-none');
-      }, 1200);
-    }, { once: true });
-
-  } else {
-    // If they've already seen how to play, skip the modal
-    playButton.classList.add('fade-out');
-    setTimeout(() => {
-      playButton.style.display = "none";
-      ryddleSection.classList.remove('d-none');
-    }, 1200);
-  }
+        const hasSeenTutorial = localStorage.getItem('hasSeenHowToPlay');
+      
+        if (!hasSeenTutorial) {
+          // Show the "How to play" modal.
+          const aboutModalEl = document.getElementById('aboutModal');
+          const aboutModal = new bootstrap.Modal(aboutModalEl, {});
+          localStorage.setItem('hasSeenHowToPlay', 'true');
+          aboutModal.show();
+      
+          aboutModalEl.addEventListener('hidden.bs.modal', function() {
+            playButton.classList.add('fade-out');
+            setTimeout(() => {
+              playButton.style.display = "none";
+              ryddleSection.classList.remove('d-none');
+            }, 1200);
+          }, { once: true });
+      
+        } else {
+          playButton.classList.add('fade-out');
+          setTimeout(() => {
+            playButton.style.display = "none";
+            ryddleSection.classList.remove('d-none');
+          }, 1200);
+        }
       });
       
-      // Submit guess logic
+      // Submit guess logic.
       answerInput.addEventListener('keydown', function(event) {
         if (event.key === "Enter") {
           event.preventDefault();
           submitRyddleButton.click();
         }
       });
+      
       function showMessage(message) {
         resultMessage.innerHTML = `<div class='duplicate'>${message}</div>`;
         setTimeout(() => { resultMessage.innerHTML = ""; }, 2000);
       }
+      
       submitRyddleButton.addEventListener('click', function() {
         const answer = answerInput.value.trim().toLowerCase();
-        // flag to track the correctnesss
         let answerIsCorrect = false;
-
-
+      
         if (answer === "") {
           answerInput.classList.add('shake');
           setTimeout(() => { answerInput.classList.remove('shake'); }, 1000);
           return;
         }
+      
         if (!/^[a-z]+$/.test(answer)) {
           showMessage("Please enter a valid word.");
           answerInput.classList.add('shake');
           setTimeout(() => { answerInput.classList.remove('shake'); }, 2000);
           return;
         }
+      
         fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${answer}`)
           .then(response => {
             if (!response.ok) {
@@ -511,8 +493,17 @@ html[data-bs-theme="dark"] .my-element {
               return;
             }
             previousAttempts.push(answer);
+      
             if (answer === window.correctAnswer) {
-              answerIsCorrect = true; //correct marking
+              answerIsCorrect = true;
+              // Cache the result.
+              const today = new Date().toISOString().split('T')[0];
+              const playedData = {
+                date: today,
+                answer: window.correctAnswer,
+                status: "correct" // Store correct status
+              };
+              localStorage.setItem('ryddlePlayed', JSON.stringify(playedData));
               answerInput.disabled = true;
               submitRyddleButton.disabled = true;
               answerInput.style.fontWeight = "bold";
@@ -565,23 +556,29 @@ html[data-bs-theme="dark"] .my-element {
                 setTimeout(() => {
                   resultMessage.innerHTML = `<h2>Oops, try again tomorrow! The answer was: ${window.correctAnswer}</h2>`;
                   resultMessage.classList.add("fail");
+                  // Cache the result.
+                  const today = new Date().toISOString().split('T')[0];
+                  const playedData = {
+                    date: today,
+                    answer: window.correctAnswer,
+                    status: "incorrect" // Store incorrect status
+                  };
+                  localStorage.setItem('ryddlePlayed', JSON.stringify(playedData));
                 }, 500);
               }
             }
           })
           .catch(error => { 
-      console.error(error);
-    }) 
-    .finally(() => {
-      // Clear the input field after processing the guess
-      if (!answerIsCorrect) {
-        answerInput.value = "";
-      }
-      
-    });
+            console.error(error);
+          }) 
+          .finally(() => {
+            if (!answerIsCorrect) {
+              answerInput.value = "";
+            }
+          });
       });
       
-      // YES/NO hint button listeners
+      // Hint button listeners.
       document.getElementById('yes-hint').addEventListener('click', function() {
         hintOverlay.classList.remove('fade-in-overlay');
         hintOverlay.classList.add('fade-out-overlay');
